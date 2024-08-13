@@ -6,13 +6,14 @@ use App\Models\Nourriture;
 use Illuminate\Http\Request;
 
 class NourritureController extends Controller
-{
+{   //Afficher toutes les nourritures
     public function get_all_nourriture(){
         $nourriture=Nourriture::all();
         return response()->json($nourriture);
     }
+    //créer une nouvelle nourriture
     public function create_nourriture(Request $request)
-{
+   {
     $validated = $request->validate([
         'nom' => 'required|string|max:255',
         'quantite' => 'required|integer',
@@ -23,6 +24,8 @@ class NourritureController extends Controller
     return response()->json($newnourriture);
 }
 
+
+    //supprimer une nourriture
 public function delete_nourriture($id)
 {
     $nourriture = Nourriture::find($id);
@@ -43,8 +46,7 @@ public function delete_nourriture($id)
     return response()->json($res);
 }
 
-
-
+     //modifier une nourriture
 
 
 public function update_nourriture(Request $request, $id)

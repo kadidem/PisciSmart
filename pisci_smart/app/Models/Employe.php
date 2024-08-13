@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Nourriture extends Model
+class Employe extends Model
 {
     use HasFactory;
-    protected $fillable= ['nom','quantite','date', ];
-    protected $primaryKey='idNourriture';
+    protected $fillable= ['nom','prenom','adresse', 'telephone'];
+    protected $primaryKey='idEmploye';
 }
