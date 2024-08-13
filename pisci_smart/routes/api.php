@@ -3,7 +3,11 @@
 use App\Http\Controllers\EmployeController;
 use App\Http\Controllers\NourritureController;
 use App\Http\Controllers\PisciculteurController;
+use App\Http\Controllers\VisiteurController;
 use App\Models\Pisciculteur;
+use App\Models\Nourriture;
+use App\Models\Empploye;
+use App\Models\Visiteur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,6 +31,11 @@ Route::get("/employe",[EmployeController::class,'get_all_employe']);
 Route::post("/employe",[EmployeController::class,'create_employe']);
 Route::delete("/employe/{idEmploye}",[EmployeController::class,'delete_employe']);
 Route::put('/employe/{idEmploye}', [EmployeController::class, 'update_employe']);
+
+Route::get("/visiteur",[VisiteurController::class,'get_all_visiteur']);
+Route::post("/visiteur",[VisiteurController::class,'create_visiteur']);
+Route::delete("/visiteur/{idVisiteur}",[VisiteurController::class,'delete_visiteur']);
+Route::put('/visiteur/{idVisiteur}', [VisiteurController::class, 'update_visiteur']);
 
 
 
