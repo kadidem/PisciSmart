@@ -10,30 +10,34 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->uuid('uuid');
-            $table->string('first_name')->nullable();
-            $table->string('last_name')->nullable();
-            $table->string('username')->nullable();
-            $table->string('email')->unique();
-            $table->string('mobile')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->timestamp('mobile_verified_at')->nullable();
-            $table->timestamp('mobile_verification_code')->nullable();
-            $table->text("description")->nullable();
-            $table->string("thumbail")->nullable();
-            $table->string("profile_icon")->nullable();
-            $table->enum("gender", ["male", "female"]);
-            $table->enum("relationship", ["single", "maried", "engage"]);
-            $table->string("location")->nullable();
-            $table->string("adress")->nullable();
-            $table->boolean("is_private")->default(0);
-            $table->boolean("is_banned")->default(0);
-            $table->string('password');
-            $table->rememberToken();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('users')) {
+            Schema::create('users', function (Blueprint $table) {
+                $table->id();
+                $table->uuid('uuid')->unique();
+                $table->string('first_name')->nullable();
+                $table->string('last_name')->nullable();
+                $table->string('username')->nullable();
+                $table->string('profile')->nullable();
+                $table->string('email')->unique();
+                $table->string('mobile')->unique()->nullable();
+                $table->timestamp('email_verified_at')->nullable();
+                $table->timestamp('mobile_verified_at')->nullable();
+                $table->string('mobile_verification_code')->nullable();
+                $table->text('description')->nullable();
+                $table->string('thumbail')->nullable();
+                $table->string('profile_icon')->nullable();
+                $table->enum('gender', ['male', 'female'])->nullable();
+                $table->enum('relationship', ['single', 'maried', 'engage'])->nullable();
+                $table->string('location')->nullable();
+                $table->string('adress')->nullable();
+                $table->boolean('is_private')->default(false);
+                $table->boolean('is_banned')->default(false);
+                $table->string('password');
+                $table->rememberToken();
+                $table->timestamps();
+            });
+        }
+
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();

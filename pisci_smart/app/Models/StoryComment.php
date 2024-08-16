@@ -13,5 +13,4 @@ class StoryComment extends Model
         "user_id",
         "comment",
     ];
-
 }

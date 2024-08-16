@@ -18,14 +18,13 @@ use Symfony\Component\Mime\Exception\LogicException;
  */
 class RawMessage
 {
+    /** @var iterable|string|resource */
+    private $message;
     private bool $isGeneratorClosed;
 
-    /**
-     * @param iterable|string|resource $message
-     */
-    public function __construct(
-        private $message,
-    ) {
+    public function __construct(iterable|string $message)
+    {
+        $this->message = $message;
     }
 
     public function __destruct()
@@ -56,7 +55,8 @@ class RawMessage
     public function toIterable(): iterable
     {
         if ($this->isGeneratorClosed ?? false) {
-            throw new LogicException('Unable to send the email as its generator is already closed.');
+            trigger_deprecation('symfony/mime', '6.4', 'Sending an email with a closed generator is deprecated and will throw in 7.0.');
+            // throw new LogicException('Unable to send the email as its generator is already closed.');
         }
 
         if (\is_string($this->message)) {
@@ -92,9 +92,11 @@ class RawMessage
     }
 
     /**
+     * @return void
+     *
      * @throws LogicException if the message is not valid
      */
-    public function ensureValidity(): void
+    public function ensureValidity()
     {
     }
 

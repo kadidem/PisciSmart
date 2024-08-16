@@ -243,42 +243,6 @@ class Str
     }
 
     /**
-     * Remove the given string(s) if it exists at the start of the haystack.
-     *
-     * @param  string  $subject
-     * @param  string|array  $needle
-     * @return string
-     */
-    public static function chopStart($subject, $needle)
-    {
-        foreach ((array) $needle as $n) {
-            if (str_starts_with($subject, $n)) {
-                return substr($subject, strlen($n));
-            }
-        }
-
-        return $subject;
-    }
-
-    /**
-     * Remove the given string(s) if it exists at the end of the haystack.
-     *
-     * @param  string  $subject
-     * @param  string|array  $needle
-     * @return string
-     */
-    public static function chopEnd($subject, $needle)
-    {
-        foreach ((array) $needle as $n) {
-            if (str_ends_with($subject, $n)) {
-                return substr($subject, 0, -strlen($n));
-            }
-        }
-
-        return $subject;
-    }
-
-    /**
      * Determine if a given string contains a given substring.
      *
      * @param  string  $haystack
@@ -339,18 +303,6 @@ class Str
     public static function convertCase(string $string, int $mode = MB_CASE_FOLD, ?string $encoding = 'UTF-8')
     {
         return mb_convert_case($string, $mode, $encoding);
-    }
-
-    /**
-     * Replace consecutive instances of a given character with a single character in the given string.
-     *
-     * @param  string  $string
-     * @param  string  $character
-     * @return string
-     */
-    public static function deduplicate(string $string, string $character = ' ')
-    {
-        return preg_replace('/'.preg_quote($character, '/').'+/u', $character, $string);
     }
 
     /**
@@ -637,28 +589,15 @@ class Str
      * @param  string  $value
      * @param  int  $limit
      * @param  string  $end
-     * @param  bool  $preserveWords
      * @return string
      */
-    public static function limit($value, $limit = 100, $end = '...', $preserveWords = false)
+    public static function limit($value, $limit = 100, $end = '...')
     {
         if (mb_strwidth($value, 'UTF-8') <= $limit) {
             return $value;
         }
 
-        if (! $preserveWords) {
-            return rtrim(mb_strimwidth($value, 0, $limit, '', 'UTF-8')).$end;
-        }
-
-        $value = trim(preg_replace('/[\n\r]+/', ' ', strip_tags($value)));
-
-        $trimmed = rtrim(mb_strimwidth($value, 0, $limit, '', 'UTF-8'));
-
-        if (mb_substr($value, $limit, 1, 'UTF-8') === ' ') {
-            return $trimmed.$end;
-        }
-
-        return preg_replace("/(.*)\s.*/", '$1', $trimmed).$end;
+        return rtrim(mb_strimwidth($value, 0, $limit, '', 'UTF-8')).$end;
     }
 
     /**
@@ -696,18 +635,11 @@ class Str
      *
      * @param  string  $string
      * @param  array  $options
-     * @param  array  $extensions
      * @return string
      */
-    public static function markdown($string, array $options = [], array $extensions = [])
+    public static function markdown($string, array $options = [])
     {
         $converter = new GithubFlavoredMarkdownConverter($options);
-
-        $environment = $converter->getEnvironment();
-
-        foreach ($extensions as $extension) {
-            $environment->addExtension($extension);
-        }
 
         return (string) $converter->convert($string);
     }
@@ -827,17 +759,6 @@ class Str
         }
 
         return collect($matches[1] ?? $matches[0]);
-    }
-
-    /**
-     * Remove all non-numeric characters from a string.
-     *
-     * @param  string  $value
-     * @return string
-     */
-    public static function numbers($value)
-    {
-        return preg_replace('/[^0-9]/', '', $value);
     }
 
     /**
@@ -1038,7 +959,7 @@ class Str
      * @param  callable|null  $factory
      * @return void
      */
-    public static function createRandomStringsUsing(?callable $factory = null)
+    public static function createRandomStringsUsing(callable $factory = null)
     {
         static::$randomStringFactory = $factory;
     }
@@ -1268,7 +1189,7 @@ class Str
      * Replace the patterns matching the given regular expression.
      *
      * @param  array|string  $pattern
-     * @param  \Closure|string[]|string  $replace
+     * @param  \Closure|string  $replace
      * @param  array|string  $subject
      * @param  int  $limit
      * @return string|string[]|null
@@ -1488,54 +1409,6 @@ class Str
     }
 
     /**
-     * Remove all whitespace from both ends of a string.
-     *
-     * @param  string  $value
-     * @param  string|null  $charlist
-     * @return string
-     */
-    public static function trim($value, $charlist = null)
-    {
-        if ($charlist === null) {
-            return preg_replace('~^[\s\x{FEFF}\x{200B}\x{200E}]+|[\s\x{FEFF}\x{200B}\x{200E}]+$~u', '', $value) ?? trim($value);
-        }
-
-        return trim($value, $charlist);
-    }
-
-    /**
-     * Remove all whitespace from the beginning of a string.
-     *
-     * @param  string  $value
-     * @param  string|null  $charlist
-     * @return string
-     */
-    public static function ltrim($value, $charlist = null)
-    {
-        if ($charlist === null) {
-            return preg_replace('~^[\s\x{FEFF}\x{200B}\x{200E}]+~u', '', $value) ?? ltrim($value);
-        }
-
-        return ltrim($value, $charlist);
-    }
-
-    /**
-     * Remove all whitespace from the end of a string.
-     *
-     * @param  string  $value
-     * @param  string|null  $charlist
-     * @return string
-     */
-    public static function rtrim($value, $charlist = null)
-    {
-        if ($charlist === null) {
-            return preg_replace('~[\s\x{FEFF}\x{200B}\x{200E}]+$~u', '', $value) ?? rtrim($value);
-        }
-
-        return rtrim($value, $charlist);
-    }
-
-    /**
      * Remove all "extra" blank space from the given string.
      *
      * @param  string  $value
@@ -1543,7 +1416,7 @@ class Str
      */
     public static function squish($value)
     {
-        return preg_replace('~(\s|\x{3164}|\x{1160})+~u', ' ', static::trim($value));
+        return preg_replace('~(\s|\x{3164}|\x{1160})+~u', ' ', preg_replace('~^[\s\x{FEFF}]+|[\s\x{FEFF}]+$~u', '', $value));
     }
 
     /**
@@ -1762,19 +1635,6 @@ class Str
     }
 
     /**
-     * Generate a UUID (version 7).
-     *
-     * @param  \DateTimeInterface|null  $time
-     * @return \Ramsey\Uuid\UuidInterface
-     */
-    public static function uuid7($time = null)
-    {
-        return static::$uuidFactory
-                    ? call_user_func(static::$uuidFactory)
-                    : Uuid::uuid7($time);
-    }
-
-    /**
      * Generate a time-ordered UUID.
      *
      * @return \Ramsey\Uuid\UuidInterface
@@ -1805,7 +1665,7 @@ class Str
      * @param  callable|null  $factory
      * @return void
      */
-    public static function createUuidsUsing(?callable $factory = null)
+    public static function createUuidsUsing(callable $factory = null)
     {
         static::$uuidFactory = $factory;
     }
@@ -1850,7 +1710,7 @@ class Str
      * @param  \Closure|null  $callback
      * @return \Ramsey\Uuid\UuidInterface
      */
-    public static function freezeUuids(?Closure $callback = null)
+    public static function freezeUuids(Closure $callback = null)
     {
         $uuid = Str::uuid();
 
@@ -1912,7 +1772,7 @@ class Str
      * @param  callable|null  $factory
      * @return void
      */
-    public static function createUlidsUsing(?callable $factory = null)
+    public static function createUlidsUsing(callable $factory = null)
     {
         static::$ulidFactory = $factory;
     }
@@ -1957,7 +1817,7 @@ class Str
      * @param  Closure|null  $callback
      * @return Ulid
      */
-    public static function freezeUlids(?Closure $callback = null)
+    public static function freezeUlids(Closure $callback = null)
     {
         $ulid = Str::ulid();
 

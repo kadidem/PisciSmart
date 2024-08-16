@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Contracts\CallableDispatcher;
 use Illuminate\Routing\Contracts\ControllerDispatcher as ControllerDispatcherContract;
 use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Routing\Matching\HostValidator;
 use Illuminate\Routing\Matching\MethodValidator;
 use Illuminate\Routing\Matching\SchemeValidator;
@@ -796,7 +795,7 @@ class Route
     /**
      * Add a prefix to the route URI.
      *
-     * @param  string|null  $prefix
+     * @param  string  $prefix
      * @return $this
      */
     public function prefix($prefix)
@@ -1118,15 +1117,11 @@ class Route
      */
     protected function staticallyProvidedControllerMiddleware(string $class, string $method)
     {
-        return collect($class::middleware())->map(function ($middleware) {
-            return $middleware instanceof Middleware
-                ? $middleware
-                : new Middleware($middleware);
-        })->reject(function ($middleware) use ($method) {
+        return collect($class::middleware())->reject(function ($middleware) use ($method) {
             return static::methodExcludedByOptions(
                 $method, ['only' => $middleware->only, 'except' => $middleware->except]
             );
-        })->map->middleware->flatten()->values()->all();
+        })->map->middleware->values()->all();
     }
 
     /**

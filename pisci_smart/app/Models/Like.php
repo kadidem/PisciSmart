@@ -14,7 +14,7 @@ class Like extends Model
         "user_id",
     ];
 
-    /**
+     /**
      * Get the user that owns the notification
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -23,4 +23,5 @@ class Like extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
 }

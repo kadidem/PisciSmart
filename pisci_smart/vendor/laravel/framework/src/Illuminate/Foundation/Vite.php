@@ -2,6 +2,7 @@
 
 namespace Illuminate\Foundation;
 
+use Exception;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\HtmlString;
@@ -169,7 +170,7 @@ class Vite implements Htmlable
     /**
      * Resolve asset paths using the provided resolver.
      *
-     * @param  callable|null  $resolver
+     * @param  callable|null  $urlResolver
      * @return $this
      */
     public function createAssetPathsUsing($resolver)
@@ -681,7 +682,7 @@ class Vite implements Htmlable
      * @param  string|null  $buildDirectory
      * @return string
      *
-     * @throws \Illuminate\Foundation\ViteException
+     * @throws \Exception
      */
     public function content($asset, $buildDirectory = null)
     {
@@ -692,7 +693,7 @@ class Vite implements Htmlable
         $path = public_path($buildDirectory.'/'.$chunk['file']);
 
         if (! is_file($path) || ! file_exists($path)) {
-            throw new ViteException("Unable to locate file from Vite manifest: {$path}.");
+            throw new Exception("Unable to locate file from Vite manifest: {$path}.");
         }
 
         return file_get_contents($path);
@@ -711,7 +712,7 @@ class Vite implements Htmlable
     }
 
     /**
-     * Get the manifest file for the given build directory.
+     * Get the the manifest file for the given build directory.
      *
      * @param  string  $buildDirectory
      * @return array
@@ -772,12 +773,12 @@ class Vite implements Htmlable
      * @param  string  $file
      * @return array
      *
-     * @throws \Illuminate\Foundation\ViteException
+     * @throws \Exception
      */
     protected function chunk($manifest, $file)
     {
         if (! isset($manifest[$file])) {
-            throw new ViteException("Unable to locate file in Vite manifest: {$file}.");
+            throw new Exception("Unable to locate file in Vite manifest: {$file}.");
         }
 
         return $manifest[$file];

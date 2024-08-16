@@ -47,7 +47,6 @@ use Illuminate\Support\Testing\Fakes\BusFake;
  * @method static \Illuminate\Bus\Batch dispatchFakeBatch(string $name = '')
  * @method static \Illuminate\Bus\Batch recordPendingBatch(\Illuminate\Bus\PendingBatch $pendingBatch)
  * @method static \Illuminate\Support\Testing\Fakes\BusFake serializeAndRestore(bool $serializeAndRestore = true)
- * @method static array dispatchedBatches()
  *
  * @see \Illuminate\Bus\Dispatcher
  * @see \Illuminate\Support\Testing\Fakes\BusFake
@@ -61,7 +60,7 @@ class Bus extends Facade
      * @param  \Illuminate\Bus\BatchRepository|null  $batchRepository
      * @return \Illuminate\Support\Testing\Fakes\BusFake
      */
-    public static function fake($jobsToFake = [], ?BatchRepository $batchRepository = null)
+    public static function fake($jobsToFake = [], BatchRepository $batchRepository = null)
     {
         $actualDispatcher = static::isFake()
                 ? static::getFacadeRoot()->dispatcher

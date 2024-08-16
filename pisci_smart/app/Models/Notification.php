@@ -17,7 +17,7 @@ class Notification extends Model
         "read_at",
     ];
 
-    /**
+     /**
      * Get the user that owns the notification
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

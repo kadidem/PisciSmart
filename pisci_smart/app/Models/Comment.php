@@ -16,8 +16,8 @@ class Comment extends Model
         "status",
     ];
 
-    /**
-     * Get the user that owns the comment
+     /**
+     * Get the user that owns the notification
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -27,7 +27,7 @@ class Comment extends Model
     }
 
     /**
-     * Get the user that owns the notification
+     * Get the post that owns the Comment
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */

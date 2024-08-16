@@ -15,7 +15,6 @@ class PostMedia extends Model
         "file",
         "position",
     ];
-
     /**
      * Get the user that owns the Story
      *

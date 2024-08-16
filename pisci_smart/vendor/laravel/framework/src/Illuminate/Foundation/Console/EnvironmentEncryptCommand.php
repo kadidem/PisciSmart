@@ -21,7 +21,6 @@ class EnvironmentEncryptCommand extends Command
                     {--key= : The encryption key}
                     {--cipher= : The encryption cipher}
                     {--env= : The environment to be encrypted}
-                    {--prune : Delete the original environment file}
                     {--force : Overwrite the existing encrypted environment file}';
 
     /**
@@ -65,7 +64,7 @@ class EnvironmentEncryptCommand extends Command
         $keyPassed = $key !== null;
 
         $environmentFile = $this->option('env')
-                            ? Str::finish(dirname($this->laravel->environmentFilePath()), DIRECTORY_SEPARATOR).'.env.'.$this->option('env')
+                            ? base_path('.env').'.'.$this->option('env')
                             : $this->laravel->environmentFilePath();
 
         $encryptedFile = $environmentFile.'.encrypted';
@@ -75,11 +74,15 @@ class EnvironmentEncryptCommand extends Command
         }
 
         if (! $this->files->exists($environmentFile)) {
-            $this->fail('Environment file not found.');
+            $this->components->error('Environment file not found.');
+
+            return Command::FAILURE;
         }
 
         if ($this->files->exists($encryptedFile) && ! $this->option('force')) {
-            $this->fail('Encrypted environment file already exists.');
+            $this->components->error('Encrypted environment file already exists.');
+
+            return Command::FAILURE;
         }
 
         try {
@@ -90,11 +93,9 @@ class EnvironmentEncryptCommand extends Command
                 $encrypter->encrypt($this->files->get($environmentFile))
             );
         } catch (Exception $e) {
-            $this->fail($e->getMessage());
-        }
+            $this->components->error($e->getMessage());
 
-        if ($this->option('prune')) {
-            $this->files->delete($environmentFile);
+            return Command::FAILURE;
         }
 
         $this->components->info('Environment successfully encrypted.');

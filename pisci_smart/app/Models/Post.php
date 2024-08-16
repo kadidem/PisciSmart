@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Post extends Model
 {
@@ -14,12 +15,24 @@ class Post extends Model
         "user_id",
         "content",
         "status",
+        'is_public',
         "likes",
         "comments",
-        "is_groupe_post",
-        "groupe_id",
+        "is_page_post",
+        "page_id",
+        "is_group_post",
+        "group_id",
     ];
 
+    /**
+     * Get all of the comments for the Post
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function commentss(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
     /**
      * Get the user that owns the Story
      *
@@ -35,18 +48,18 @@ class Post extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function groupe(): BelongsTo
+    public function group(): BelongsTo
     {
-        return $this->belongsTo(Groupe::class, 'groupe_id');
+        return $this->belongsTo(Group::class, 'group_id');
     }
 
-    /**
+     /**
      * Get the page that owns the post
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function page(): BelongsTo
     {
-        return $this->belongsTo(Groupe::class, 'page_id');
+        return $this->belongsTo(Page::class, 'page_id');
     }
 }

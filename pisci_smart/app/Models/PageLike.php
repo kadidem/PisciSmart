@@ -13,9 +13,8 @@ class PageLike extends Model
         "page_id",
         "user_id",
     ];
-
-    /**
-     * Get the groupe that owns the post
+     /**
+     * Get the group that owns the post
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -23,8 +22,7 @@ class PageLike extends Model
     {
         return $this->belongsTo(Page::class, 'page_id');
     }
-
-    /**
+     /**
      * Get the user that owns the pagelike
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -33,4 +31,5 @@ class PageLike extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
 }
