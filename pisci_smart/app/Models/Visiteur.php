@@ -10,4 +10,6 @@ class Visiteur extends Model
     use HasFactory;
     protected $fillable= ['nom','prenom','adresse', 'telephone'];
     protected $primaryKey='idVisiteur';
+
+    public $timestamps = false;
 }

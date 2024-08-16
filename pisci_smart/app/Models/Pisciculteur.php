@@ -10,4 +10,7 @@ class Pisciculteur extends Model
     use HasFactory;
     protected $fillable= ['nom','prenom','adresse', 'telephone'];
     protected $primaryKey='idPisciculteur';
+
+
+    public $timestamps = false;
 }

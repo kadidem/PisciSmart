@@ -10,4 +10,6 @@ class Nourriture extends Model
     use HasFactory;
     protected $fillable= ['nom','quantite','date', ];
     protected $primaryKey='idNourriture';
+
+    public $timestamps = false;
 }

@@ -3,34 +3,46 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employe;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB; // Assure-toi que cette ligne est présente
 use Illuminate\Http\Request;
 
 class EmployeController extends Controller
 {
-   //Afficher toutes les employes
-   public function get_all_employe(){
-    $employe=Employe::all();
-    return response()->json($employe);
-  }
+    // Afficher toutes les employes
+    public function get_all_employe()
+    {
+        $employe = Employe::all();
+        return response()->json($employe);
+    }
 
-    //Créer un nouveau employe
-  public function create_employe(Request $request)
-  {
-      $validated = $request->validate([
-          'idPisciculteur' => 'required|integer|exists:pisciculteurs,id',
-          'nom' => 'required|string|max:255',
-          'prenom' => 'required|string|max:255',
-          'telephone' => 'required|string|max:255',
-          'adresse' => 'required|string|max:255',
-          'idPisciculteur' => 'required|string|max:255',
+    // Créer un employé
+    public function create_employe(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'nom' => 'required|string|max:255',
+                'prenom' => 'required|string|max:255',
+                'telephone' => 'required|string|max:255',
+                'adresse' => 'required|string|max:255',
+                'idPisciculteur' => 'required|integer|exists:pisciculteurs,idPisciculteur',
+            ]);
 
-      ]);
+            $newemploye = Employe::create($validated);
 
-      $newemploye = Employe::create($validated);
-      return response()->json(  $newemploye);
-  }
+            return response()->json([
+                'message' => 'Employé ajouté avec succès.',
+                'employe' => $newemploye
+            ]);
+        } catch (\Exception $e) {
+            // Log the exception message
+            Log::error($e->getMessage());
+            // Return a generic error response
+            return response()->json(['error' => 'Pisciculteur introuvable.'], 500);
+        }
+    }
 
-    //supprimer un employe
+    // Supprimer un employé
     public function delete_employe($id)
     {
         $employe = Employe::find($id);
@@ -43,41 +55,51 @@ class EmployeController extends Controller
             ];
         } else {
             $res = [
-                "message" => "Employe non trouvée",
+                "message" => "Employé non trouvé",
                 "status" => 404,
             ];
         }
         return response()->json($res);
     }
-     //modifier employe
-     public function update_employe(Request $request, $idEmploye)
-     {
-         $validated = $request->validate([
-             'nom' => 'required|string|max:255',
-             'prenom' => 'required|string|max:255',
-             'telephone' => 'required|string|max:255',
-             'adresse' => 'required|string|max:255',
 
-         ]);
-         $employe= Employe::find($idEmploye);
+    // Modifier un employé
+    public function update_employe(Request $request, $idEmploye)
+    {
+        try {
+            // Vérifier si l'employé existe
+            $employe = Employe::find($idEmploye);
 
-         if ($employe) {
-             $employe->update($validated);
+            if (!$employe) {
+                return response()->json([
+                    'message' => 'Employé non trouvé',
+                    'status' => 404,
+                ], 404);
+            }
 
-             $res = [
-                 "message" => "Mise à jour réussie",
-                 "status" => 200,
-                 "data" => $employe,
-             ];
-         } else {
-             $res = [
-                 "message" => "Employe non trouvée",
-                 "status" => 404,
-             ];
-         }
+            // Valider les données
+            $validated = $request->validate([
+                'nom' => 'required|string|max:255',
+                'prenom' => 'required|string|max:255',
+                'telephone' => 'required|string|max:255',
+                'adresse' => 'required|string|max:255',
+                'idPisciculteur' => 'required|integer|exists:pisciculteurs,idPisciculteur',
+            ]);
 
-         return response()->json($res);
-     }
+            // Mise à jour des données de l'employé
+            $employe->update($validated);
 
+            return response()->json([
+                'message' => 'Mise à jour réussie',
+                'status' => 200,
+                'employe' => $employe,
+            ], 200);
+        } catch (\Exception $e) {
+            // Log the exception message
+            Log::error($e->getMessage());
+            // Return a generic error response
+            return response()->json(['error' => 'mise à jour échoué! pisciculteur n/existe pas.'], 500);
+        }
+    }
 
 }
+
