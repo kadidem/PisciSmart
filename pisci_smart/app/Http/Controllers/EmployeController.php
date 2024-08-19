@@ -9,12 +9,43 @@ use Illuminate\Http\Request;
 
 class EmployeController extends Controller
 {
-    // Afficher toutes les employes
+    // Afficher tous les employes
     public function get_all_employe()
     {
         $employe = Employe::all();
         return response()->json($employe);
     }
+
+    //afficher un employé
+
+    public function getEmployeById($id)
+{
+    try {
+        // Rechercher l'employe' par ID
+        $employe = Employe::find($id);
+
+        // Si l'employe n'existe pas, retourner une erreur
+        if (!$employe) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'employe non trouvé'
+            ], 404);
+        }
+
+        // Retourner l'employe trouvé
+        return response()->json([
+            'status' => 'success',
+            'data' => $employe
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Une erreur s/est produite lors de la récupération de l/employe.',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
 
     // Créer un employé
     public function create_employe(Request $request)

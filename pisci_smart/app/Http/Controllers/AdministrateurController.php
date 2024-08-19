@@ -15,6 +15,37 @@ class AdministrateurController extends Controller
         return response()->json($administrateurs);
     }
 
+
+
+    public function getAdministrateurById($id)
+{
+    try {
+        // Rechercher l'administrateur par ID
+        $administrateur = Administrateur::find($id);
+
+        // Si l'administrateur'n'existe pas, retourner une erreur
+        if (!$administrateur) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Administrateur non trouvé'
+            ], 404);
+        }
+
+        // Retourner le administrateur trouvé
+        return response()->json([
+            'status' => 'success',
+            'data' => $administrateur
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Une erreur s/est produite lors de la récupération de l/administrateur.',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
     // Ajouter un nouvel administrateur
     public function store(Request $request)
     {

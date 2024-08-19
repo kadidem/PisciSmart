@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\Nourriture;
 use Illuminate\Http\Request;
 
@@ -11,6 +10,39 @@ class NourritureController extends Controller
         $nourriture=Nourriture::all();
         return response()->json($nourriture);
     }
+
+
+
+    public function getNourritureById($id)
+{
+    try {
+        // Rechercher la nourriture par ID
+        $nourriture = Nourriture::find($id);
+
+        // Si la nourriture n'existe pas, retourner une erreur
+        if (!$nourriture) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Nourriture non trouvé'
+            ], 404);
+        }
+
+        // Retourner la nourriture trouvé
+        return response()->json([
+            'status' => 'success',
+            'data' => $nourriture
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Une erreur s/est produite lors de la récupération de la nourriture.',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
+
     //créer une nouvelle nourriture
     public function create_nourriture(Request $request)
    {
