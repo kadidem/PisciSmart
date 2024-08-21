@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('administrateurs', function (Blueprint $table) {
-            $table->id('idAdmi'); // Clé primaire auto-incrémentée
-            $table->string('nom');
-            $table->string('prenom');
-            $table->string('email')->unique(); // Email unique
-           
+        Schema::create('notifications', function (Blueprint $table) {
+            $table->id('idNotif');
+            $table->string('message');
+            $table->unsignedBigInteger('idDispo');
+            $table->foreign('idDispo')->references('idDispo')->on('dispositifs')->onDelete('cascade');
+
+
         });
     }
 
@@ -25,7 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('administrateurs');
+        Schema::dropIfExists('notifications');
     }
 };
-

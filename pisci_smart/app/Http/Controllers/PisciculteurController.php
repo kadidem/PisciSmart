@@ -76,6 +76,8 @@ class PisciculteurController extends Controller
         }
     }
 
+    
+
     //supprimer un pisciculteur
     public function delete_pisciculteur($id)
     {

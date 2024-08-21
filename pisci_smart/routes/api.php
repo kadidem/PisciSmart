@@ -6,7 +6,12 @@ use App\Http\Controllers\PisciculteurController;
 use App\Http\Controllers\EmployeController;
 use App\Http\Controllers\NourritureController;
 use App\Http\Controllers\VisiteurController;
+use App\Http\Controllers\DispositifController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\BassinController;
 
+
+use App\Models\Dispositif;
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
@@ -43,5 +48,28 @@ Route::get('/visiteur/{id}', [VisiteurController::class, 'getVisiteurById']);
 Route::post('/visiteur', [VisiteurController::class, 'create_visiteur']);
 Route::put('/visiteur/{id}', [VisiteurController::class, 'update_visiteur']);
 Route::delete('/visiteur/{id}', [VisiteurController::class, 'delete_visiteur']);
+
+
+//dispositif
+Route::get('/dispositif', [DispositifController::class, 'get_all_dispositif']);
+Route::get('/dispositif/{id}', [DispositifController::class, 'getDispositifById']);
+Route::post('/dispositif', [DispositifController::class, 'create_dispositif']);
+Route::put('/dispositif/{id}', [DispositifController::class, 'update_dispositif']);
+Route::delete('/dispositif/{id}', [DispositifController::class, 'delete_dispositif']);
+
+
+//notification
+Route::get('/notification', [NotificationController::class, 'get_all_notification']);
+Route::get('/notification/{id}', [NotificationController::class, 'getNotificationById']);
+Route::post('/notification', [NotificationController::class, 'create_notification']);
+Route::put('/notification/{id}', [NotificationController::class, 'update_notification']);
+Route::delete('/notification/{id}', [NotificationController::class, 'delete_notification']);
+
+//bassin
+Route::get('/bassin', [BassinController::class, 'get_all_bassin']);
+Route::get('/bassin/{id}', [BassinController::class, 'getBassinById']);
+Route::post('/bassin', [BassinController::class, 'create_bassin']);
+Route::put('/bassin/{id}', [BassinController::class, 'update_Bassin']);
+Route::delete('/bassin/{id}', [BassinController::class, 'delete_Bassin']);
 
 
