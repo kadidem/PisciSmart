@@ -9,8 +9,6 @@ use App\Http\Controllers\VisiteurController;
 use App\Http\Controllers\DispositifController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\BassinController;
-
-
 use App\Models\Dispositif;
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
@@ -71,5 +69,6 @@ Route::get('/bassin/{id}', [BassinController::class, 'getBassinById']);
 Route::post('/bassin', [BassinController::class, 'create_bassin']);
 Route::put('/bassin/{id}', [BassinController::class, 'update_Bassin']);
 Route::delete('/bassin/{id}', [BassinController::class, 'delete_Bassin']);
+
 
 
