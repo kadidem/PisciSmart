@@ -12,20 +12,8 @@ use Illuminate\Notifications\Notifiable;
 class Employe extends Model
 {
     use HasFactory;
-    use HasApiTokens, HasFactory, Notifiable;
-    protected $primaryKey = 'idemploye';
-    public $timestamps = false;
-    protected $fillable = [
-        'nom',
-        'prenom',
-        'telephone',
-        'adresse',
-        'idpisciculteur',
-        'password',
-    ];
+    protected $fillable= ['nom','prenom','adresse', 'telephone', 'idPisciculteur'];
+    protected $primaryKey='idEmploye';
 
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    public $timestamps = false;
 }
