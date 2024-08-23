@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UpdateVenteRequest;
-use App\Http\Resources\VenteResource;
 use App\Models\Vente;
 use Illuminate\Http\Request;
 
@@ -12,7 +10,7 @@ class VenteController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(request $request)
     {
         return response()->json(Vente::all());
     }
@@ -30,22 +28,28 @@ class VenteController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'nom' => 'required|string',
             'montant' => 'required|numeric',
+            'quantite' => 'required|numeric',
             'date' => 'required|date',
-            'id' => 'required|exists:cycles,id',
+            'idCycle' => 'required|exists:cycles,idCycle'
+
         ]);
-        $vente = Vente::create($validated);
-        return new VenteResource($vente);
+
+        // Créer un cycle
+        $vente = Vente::create($request->all());
+
+        return response()->json(['message' => 'Vente créé avec succès', 'data' => $vente], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(request $request, Vente $vente)
+    public function show($id)
     {
-        return new VenteResource($vente);
+        $vente = Vente::findOrFail($id);
+        return response()->json($vente);
     }
 
     /**
@@ -59,19 +63,34 @@ class VenteController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateVenteRequest $request, Vente $vente)
+    public function update(Request $request, $id)
     {
-        $validated = $request->validated();
-        $vente->update($validated);
-        return new VenteResource($vente);
+        $request->validate([
+            'nom' => 'required|string',
+            'montant' => 'required|numeric',
+            'date' => 'required|date|before_or_equal:today',
+            'idCycle' => 'required|exists:cycles,idCycle'
+
+        ],
+        [
+            'date.before_or_equal' => 'La date ne peut pas être dans le futur. Veuillez entrer une date valide.'
+        ]
+    );
+
+        $vente = Vente::findOrFail($id);
+
+        $vente->update($request->all());
+        return response()->json(['message' => 'Vente mis à jour avec succès', 'data' => $vente], 201);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(request $request, Vente $vente)
+    public function destroy($id)
     {
+        $vente = Vente::findOrFail($id);
+
         $vente->delete();
-        return response()->noContent();
+        return response()->json(['message' => 'Vente supprimé avec succès']);
     }
 }

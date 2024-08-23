@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UpdateDepenseRequest;
-use App\Http\Resources\DepenseResource;
 use App\Models\Depense;
 use Illuminate\Http\Request;
 
@@ -12,7 +10,7 @@ class DepenseController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(request $request)
     {
         return response()->json(Depense::all());
     }
@@ -30,22 +28,27 @@ class DepenseController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'nom' => 'required|string',
             'montant' => 'required|numeric',
             'date' => 'required|date',
-            'id' => 'required|exists:cycles,id',
+            'idCycle' => 'required|exists:cycles,idCycle'
+
         ]);
-        $depense = Depense::create($validated);
-        return new DepenseResource($depense);
+
+        // Créer un cycle
+        $depense = Depense::create($request->all());
+
+        return response()->json(['message' => 'Depense créé avec succès', 'data' => $depense], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(request $request, Depense $depense)
+    public function show($id)
     {
-        return new DepenseResource($depense);
+        $depense = Depense::findOrFail($id);
+        return response()->json($depense);
     }
 
     /**
@@ -59,19 +62,33 @@ class DepenseController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateDepenseRequest $request, Depense $depense)
+    public function update(Request $request, $id)
     {
-        $validated = $request->validated();
-        $depense->update($validated);
-        return new DepenseResource($depense);
+        $request->validate([
+            'nom' => 'required|string',
+            'montant' => 'required|numeric',
+            'date' => 'required|date|before_or_equal:today',
+            'idCycle' => 'required|exists:cycles,idCycle'
+
+        ],
+        [
+            'date.before_or_equal' => 'La date ne peut pas être dans le futur. Veuillez entrer une date valide.'
+        ]
+    );
+        $depense = Depense::findOrFail($id);
+
+        $depense->update($request->all());
+        return response()->json(['message' => 'Depense mis à jour avec succès']);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(request $request, Depense $depense)
+    public function destroy($id)
     {
+        $depense = Depense::findOrFail($id);
+
         $depense->delete();
-        return response()->noContent();
+        return response()->json(['message' => 'Depense supprimé avec succès']);
     }
 }

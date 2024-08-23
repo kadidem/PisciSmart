@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UpdatePerteRequest;
-use App\Http\Resources\PerteResource;
 use App\Models\Perte;
 use Illuminate\Http\Request;
 
@@ -12,7 +10,7 @@ class PerteController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(request $request)
     {
         return response()->json(Perte::all());
     }
@@ -30,22 +28,35 @@ class PerteController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'NbreMort' => 'required|integer',
-            'DateMort' => 'required|date',
-            'id' => 'required|exists:cycles,id',
-        ]);
-        $perte = Perte::create($validated);
-        return new PerteResource($perte);
+        $request->validate([
+            'nom' => 'required|string',
+            'NbreMort' => 'required|numeric',
+            'Date' => 'required|Date|before_or_equal:today',
+            'idCycle' => 'required|exists:cycles,idCycle'
+
+
+        ],
+        [
+            'date.before_or_equal' => 'La date ne peut pas être dans le futur. Veuillez entrer une date valide.'
+        ]
+    );
+
+
+        // Créer un cycle
+        $perte = Perte::create($request->all());
+
+        return response()->json(['message' => 'Perte créé avec succès', 'data' => $perte], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(request $request, Perte $perte)
+    public function show($id)
     {
-        return new PerteResource($perte);
+        $perte = Perte::findOrFail($id);
+        return response()->json($perte);
     }
+
     /**
      * Show the form for editing the specified resource.
      */
@@ -57,19 +68,35 @@ class PerteController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePerteRequest $request, Perte $perte)
+    public function update(Request $request, $id)
     {
-        $validated = $request->validated();
-        $perte->update($validated);
-        return new PerteResource($perte);
+        $request->validate([
+            'nom' => 'required|string',
+            'NbreMort' => 'required|numeric',
+            'Date' => 'required|Date|before_or_equal:today',
+            'idCycle' => 'required|exists:cycles,idCycle'
+
+        ],
+        [
+            'date.before_or_equal' => 'La date ne peut pas être dans le futur. Veuillez entrer une date valide.'
+        ]
+    );
+
+
+        $perte = Perte::findOrFail($id);
+
+        $perte->update($request->all());
+        return response()->json(['message' => 'perte mis à jour avec succès', 'data' => $perte], 201);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(request $request, Perte $perte)
+    public function destroy($id)
     {
+        $perte = Perte::findOrFail($id);
+
         $perte->delete();
-        return response()->noContent();
+        return response()->json(['message' => 'Perte supprimé avec succès']);
     }
 }

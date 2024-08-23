@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use Carbon\Carbon;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -8,28 +9,30 @@ use Illuminate\Database\Eloquent\Model;
 class Cycle extends Model
 {
     use HasFactory;
+    protected $primaryKey = 'idCycle'; // Spécifie la clé primaire
+    public $timestamps = false;
     protected $fillable = [
-        'NumCycle',
         'AgePoisson',
         'NbrePoisson',
-        'Espece',
         'DateDebut',
-        'DateFin'
-
+        'DateFin',
+        'NumCycle',
+        'espece',
     ];
-    public function ventes()
-    {
-        return $this->hasMany(Vente::class, 'id');
-    }
 
-    public function depenses()
+    // Calculer automatiquement la date de fin en ajoutant une durée fixe (exemple : 6 mois)
+    public static function boot()
     {
-        return $this->hasMany(Depense::class, 'id');
-    }
+        parent::boot();
 
-    public function pertes()
-    {
-        return $this->hasMany(Perte::class, 'id');
-    }
+        static::creating(function ($cycle) {
+            // Validation que la date de début ne soit pas dans le futur
+            if (Carbon::parse($cycle->DateDebut)->isFuture()) {
+                throw new \Exception("La date de début ne peut pas être dans le futur.");
+            }
 
+            // Calcul de la date de fin (par exemple 6 mois après la date de début)
+            $cycle->DateFin = Carbon::parse($cycle->DateDebut)->addMonths(6);
+        });
+    }
 }
