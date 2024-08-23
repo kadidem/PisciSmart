@@ -23,5 +23,6 @@ class Visiteur extends Model
     public function setPasswordAttribute($value)
     {
         $this->attributes['password'] = Hash::make($value);
+        // test 2
     }
 }
