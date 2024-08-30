@@ -9,18 +9,30 @@ use App\Http\Controllers\VisiteurController;
 use App\Http\Controllers\DispositifController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\BassinController;
-use App\Models\Dispositif;
+use App\Http\Controllers\CycleController;
+use App\Http\Controllers\DepenseController;
+use App\Http\Controllers\PerteController;
+use App\Http\Controllers\VenteController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\QRCodeController;
+use App\Http\Controllers\RapportController;
 
 // Test
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
-}); 
+});
+
+
+
+Route::get('rapport/cycle/{idCycle}', [RapportController::class, 'generateReport']);
+Route::get('dispositif/qrcode/{idDispo}', [DispositifController::class, 'generateQrCode']);
+route::get('/dispositif/location/{idDispo}', [DispositifController::class, 'getLocationByDispoId']);
 
 
 
 
 //picsciculteur
-Route::get('/pisciculteur', [PisciculteurController::class, 'get_all_pisciculteur']);
+Route::get('/pisciculteur', [PisciculteurController::class, 'getAllPisciculteur']);
 Route::get('/pisciculteur/{id}', [PisciculteurController::class, 'getPisciculteurById']);
 Route::post('/pisciculteur', [PisciculteurController::class, 'create_pisciculteur']);
 Route::put('/pisciculteur/{id}', [PisciculteurController::class, 'update_pisciculteur']);
@@ -71,5 +83,23 @@ Route::post('/bassin', [BassinController::class, 'create_bassin']);
 Route::put('/bassin/{id}', [BassinController::class, 'update_Bassin']);
 Route::delete('/bassin/{id}', [BassinController::class, 'delete_Bassin']);
 
+//cycle,vente,depense,perte
+Route::apiResource('cycles', CycleController::class);
+Route::apiResource('depenses', DepenseController::class);
+Route::apiResource('ventes', VenteController::class);
+Route::apiResource('pertes', PerteController::class);
+// ->only(['index','show', 'store','update',])
 
 
+
+
+
+
+
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout']);
+
+Route::get('/notifications/pisciculteur/{idPisciculteur}', [CycleController::class, 'getPisciculteurNotifications']);
+Route::get('/notifications/employe/{idEmploye}', [CycleController::class, 'getEmployeNotifications']);
+Route::post('/check-cycles', [CycleController::class, 'checkCycleEndDate']);

@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('bassins', function (Blueprint $table) {
             $table->id('idBassin');
             $table->string('nomBassin');
-            $table->string('taille');
-            $table->string('profondeur');
+            $table->string('dimension');
+            $table->enum('unite', ['m2', 'm3']); // Unité de mesure (m² ou m³)
             $table->string('description');
             $table->unsignedBigInteger('idDispo');
             $table->foreign('idDispo')->references('idDispo')->on('dispositifs')->onDelete('cascade');

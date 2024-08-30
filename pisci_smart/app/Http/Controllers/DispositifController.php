@@ -5,7 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Dispositif;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Http;
+
+
+
+
 
 class DispositifController extends Controller
 {
@@ -15,6 +21,57 @@ class DispositifController extends Controller
         $dispositif = Dispositif::all();
         return response()->json($dispositif);
     }
+
+
+    public function generateQrCode($idDispo)
+    {
+        // Ici tu peux récupérer le dispositif à partir de son ID, par exemple :
+        $dispositif = Dispositif::find($idDispo);
+        if (!$dispositif) {
+           return response()->json(['message' => 'Dispositif non trouvé'], 404);
+        }
+
+       // Chemin vers le logo de PisciSmart
+    $logoPath = resource_path('images/logo.png');
+
+    // Génération du QR code avec le contenu de l'ID du dispositif et fusion avec le logo
+    $qrCode = QrCode::format('png')
+                    ->size(200) // Taille du QR code
+                    // ->merge($logoPath, 0.6, true) // Ajouter le logo avec une taille ajustée
+                    ->generate($idDispo);
+
+    // Retourner le QR code comme une image
+    return response($qrCode)->header('Content-Type', 'image/png');
+    }
+
+
+
+    public function getLocationByDispoId($idDispo)
+{
+    $dispositif = Dispositif::find($idDispo);
+
+    if ($dispositif) {
+        $cityResponse = Http::get("https://nominatim.openstreetmap.org/reverse", [
+            'format' => 'json',
+            'lat' => $dispositif->latitude,
+            'lon' => $dispositif->longitude,
+        ]);
+
+        $cityName = $cityResponse->json()['address']['city'] ?? 'Ville inconnue';
+
+        return response()->json([
+            'latitude' => $dispositif->latitude,
+            'longitude' => $dispositif->longitude,
+            'city' => $cityName,
+            'map_url' => "https://www.openstreetmap.org/?mlat={$dispositif->latitude}&mlon={$dispositif->longitude}#map=15/{$dispositif->latitude}/{$dispositif->longitude}",
+        ]);
+    }
+
+    return response()->json(['error' => 'Dispositif non trouvé'], 404);
+}
+
+
+
 
     // Afficher un dispositif
     public function getDispositifById($id)

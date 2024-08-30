@@ -50,6 +50,7 @@ class NourritureController extends Controller
         'nom' => 'required|string|max:255',
         'quantite' => 'required|integer',
         'date' => 'required|date',
+        'idCycle' => 'required|exists:cycles,idCycle'
     ]);
 
     $newnourriture = Nourriture::create($validated);
