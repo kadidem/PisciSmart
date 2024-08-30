@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('nom');
             $table->integer('quantite');
             $table->dateTime('date');
-            $table->timestamps();
+            $table->unsignedBigInteger('idCycle'); // colonne pour la clé étrangère
+            $table->foreign('idCycle')->references('idCycle')->on('cycles')->onDelete('cascade'); // définition de la clé étrangère
         });
     }
 

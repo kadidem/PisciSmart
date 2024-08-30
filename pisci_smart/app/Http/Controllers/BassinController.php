@@ -71,8 +71,9 @@ public function create_bassin(Request $request)
     try {
         $validated = $request->validate([
             'nomBassin' => 'required|string|max:255|unique:bassins,nomBassin',
-            'taille' => 'required|string|max:255',
-            'profondeur' => 'required|string|max:255',
+
+            'dimension' => 'required|numeric|min:1', // La dimension doit être un nombre positif
+            'unite' => 'required|in:m2,m3', // Valider que l'unité est soit m2, soit m3
             'description' => 'required|string|max:255',
             'idDispo' => 'required|integer|exists:dispositifs,idDispo',
         ]);
@@ -115,8 +116,8 @@ public function create_bassin(Request $request)
                     'max:255',
                     Rule::unique('bassins', 'nomBassin')->ignore($idBassin, 'idBassin')
                 ],
-                'taille' => 'required|string|max:255',
-                'profondeur' => 'required|string|max:255',
+                'dimension' => 'sometimes|numeric|min:1', // Valider que la dimension est un nombre positif
+                'unite' => 'sometimes|in:m2,m3', // Valider que l'unité est soit m2, soit m3
                 'description' => 'required|string|max:255',
                 'idDispo' => 'required|integer|exists:dispositifs,idDispo',
             ]);

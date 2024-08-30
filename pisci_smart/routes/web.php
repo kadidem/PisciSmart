@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 
@@ -21,4 +22,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password.update');
 });
 
+Route::middleware('web')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+});
 
