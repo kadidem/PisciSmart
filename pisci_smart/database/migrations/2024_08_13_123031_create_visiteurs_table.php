@@ -15,9 +15,10 @@ return new class extends Migration
             $table->id('idVisiteur');
             $table->string('nom');
             $table->string('prenom');
-            $table->string('telephone');
+            $table->string('telephone')->unique();;
             $table->string('adresse');
-            $table->timestamps();
+            $table->string('password');
+            $table->rememberToken();
         });
     }
 

@@ -11,16 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('employes', function (Blueprint $table) {
-            $table->id('idEmploye');
-            $table->string('nom');
-            $table->string('prenom');
-            $table->string('telephone')->unique();;
-            $table->string('adresse');
-            $table->string('password');
-            $table->rememberToken();
-            $table->unsignedBigInteger('idPisciculteur');
+        Schema::create('alertes', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('idPisciculteur')->nullable();
+            $table->unsignedBigInteger('idEmploye')->nullable();
+            $table->text('message');
             $table->foreign('idPisciculteur')->references('idPisciculteur')->on('pisciculteurs')->onDelete('cascade');
+            $table->foreign('idEmploye')->references('idEmploye')->on('employes')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -30,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('employes');
+        Schema::dropIfExists('alertes');
     }
 };

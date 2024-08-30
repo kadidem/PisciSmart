@@ -17,12 +17,18 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+    public $timestamps = false;
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+       'nom', 'prenom', 'telephone', 'adresse', 'role', 'idDispo','idPisciculteur', 'password',
     ];
 
+
+
+    // Relation avec le modèle Dispositif
+    public function dispositif()
+    {
+        return $this->belongsTo(Dispositif::class, 'idDispo');
+    }
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -33,6 +39,11 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+      // Password Hashing
+      public function setPasswordAttribute($value)
+      {
+          $this->attributes['password'] = bcrypt($value);
+      }
     /**
      * Get the attributes that should be cast.
      *
