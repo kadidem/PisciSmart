@@ -67,6 +67,9 @@ Route::get('/dispositif/{id}', [DispositifController::class, 'getDispositifById'
 Route::post('/dispositif', [DispositifController::class, 'create_dispositif']);
 Route::put('/dispositif/{id}', [DispositifController::class, 'update_dispositif']);
 Route::delete('/dispositif/{id}', [DispositifController::class, 'delete_dispositif']);
+Route::get('/dispositifs/count/{idPisciculteur}', [DispositifController::class, 'count_dispositifs_by_pisciculteur']);
+Route::get('/dispositifs/pisciculteur/{idPisciculteur}', [DispositifController::class, 'get_dispositifs_by_pisciculteur']);
+Route::get('/dispositifs/count', [DispositifController::class, 'count_all_dispositifs']);
 
 
 //notification
@@ -75,6 +78,7 @@ Route::get('/notification/{id}', [NotificationController::class, 'getNotificatio
 Route::post('/notification', [NotificationController::class, 'create_notification']);
 Route::put('/notification/{id}', [NotificationController::class, 'update_notification']);
 Route::delete('/notification/{id}', [NotificationController::class, 'delete_notification']);
+
 
 //bassin
 Route::get('/bassin', [BassinController::class, 'get_all_bassin']);
