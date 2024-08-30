@@ -135,6 +135,110 @@ class DispositifController extends Controller
             return response()->json(['error' => 'Une erreur est survenue: ' . $e->getMessage()], 500);
         }
     }
+
+
+    //nbre total de dispositif/pisciculteur
+public function count_dispositifs_by_pisciculteur($idPisciculteur)
+{
+    try {
+        // Vérifier si le pisciculteur existe
+        $pisciculteur = \App\Models\Pisciculteur::find($idPisciculteur);
+
+        if (!$pisciculteur) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Pisciculteur non trouvé'
+            ], 404);
+        }
+
+        // Compter le nombre de dispositifs associés au pisciculteur
+        $count = Dispositif::where('idPisciculteur', $idPisciculteur)->count();
+
+        // Retourner une réponse JSON avec le nombre de dispositifs
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'idPisciculteur' => $idPisciculteur,
+                'total_dispositifs' => $count
+            ]
+        ], 200);
+
+    } catch (\Exception $e) {
+        // Gérer les exceptions et loguer l'erreur
+        Log::error('Erreur lors du comptage des dispositifs: ' . $e->getMessage());
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Une erreur est survenue lors du comptage des dispositifs.'
+        ], 500);
+    }
+}
+
+
+// Afficher les dispositifs d'un pisciculteur
+public function get_dispositifs_by_pisciculteur($idPisciculteur)
+{
+    try {
+        // Vérifier si le pisciculteur existe
+        $pisciculteur = \App\Models\Pisciculteur::find($idPisciculteur);
+
+        if (!$pisciculteur) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Pisciculteur non trouvé'
+            ], 404);
+        }
+
+        // Obtenir les dispositifs associés au pisciculteur
+        $dispositifs = Dispositif::where('idPisciculteur', $idPisciculteur)->get();
+
+        // Retourner une réponse JSON avec les détails des dispositifs
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'idPisciculteur' => $idPisciculteur,
+                'dispositifs' => $dispositifs
+            ]
+        ], 200);
+
+    } catch (\Exception $e) {
+        // Gérer les exceptions et loguer l'erreur
+        Log::error('Erreur lors de la récupération des dispositifs: ' . $e->getMessage());
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Une erreur est survenue lors de la récupération des dispositifs.'
+        ], 500);
+    }
+}
+
+   // Afficher le nombre total de tous les dispositifs
+public function count_all_dispositifs()
+{
+    try {
+        // Compter le nombre total de dispositifs
+        $count = Dispositif::count();
+
+        // Retourner une réponse JSON avec le nombre total de dispositifs
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'total_dispositifs' => $count
+            ]
+        ], 200);
+
+    } catch (\Exception $e) {
+        // Gérer les exceptions et loguer l'erreur
+        Log::error('Erreur lors du comptage des dispositifs: ' . $e->getMessage());
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Une erreur est survenue lors du comptage des dispositifs.'
+        ], 500);
+    }
+}
+
+
+
+
+
 }
 
 

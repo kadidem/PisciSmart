@@ -9,13 +9,23 @@ use App\Http\Controllers\VisiteurController;
 use App\Http\Controllers\DispositifController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\BassinController;
+use App\Http\Controllers\TypeDemandeController;
+use App\Http\Controllers\LikeController;
+use App\Http\Controllers\MessageController;
+use App\Http\Controllers\PostController;
+
+
+
+use App\Http\Controllers\MediaController;
+
+use App\Http\Controllers\CommentaireController;
+
 use App\Models\Dispositif;
 
 // Test
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
-}); 
-
+});
 
 
 
@@ -55,6 +65,9 @@ Route::get('/dispositif/{id}', [DispositifController::class, 'getDispositifById'
 Route::post('/dispositif', [DispositifController::class, 'create_dispositif']);
 Route::put('/dispositif/{id}', [DispositifController::class, 'update_dispositif']);
 Route::delete('/dispositif/{id}', [DispositifController::class, 'delete_dispositif']);
+Route::get('/dispositifs/count/{idPisciculteur}', [DispositifController::class, 'count_dispositifs_by_pisciculteur']);
+Route::get('/dispositifs/pisciculteur/{idPisciculteur}', [DispositifController::class, 'get_dispositifs_by_pisciculteur']);
+Route::get('/dispositifs/count', [DispositifController::class, 'count_all_dispositifs']);
 
 
 //notification
@@ -64,12 +77,67 @@ Route::post('/notification', [NotificationController::class, 'create_notificatio
 Route::put('/notification/{id}', [NotificationController::class, 'update_notification']);
 Route::delete('/notification/{id}', [NotificationController::class, 'delete_notification']);
 
+
 //bassin
 Route::get('/bassin', [BassinController::class, 'get_all_bassin']);
 Route::get('/bassin/{id}', [BassinController::class, 'getBassinById']);
 Route::post('/bassin', [BassinController::class, 'create_bassin']);
 Route::put('/bassin/{id}', [BassinController::class, 'update_Bassin']);
 Route::delete('/bassin/{id}', [BassinController::class, 'delete_Bassin']);
+
+
+// type demande
+Route::post('/type-demandes', [TypeDemandeController::class, 'store']);
+Route::get('/type-demandes', [TypeDemandeController::class, 'index']); // Récupérer tous les types de demande
+
+
+// Routes pour les commentaires
+Route::get('/commentaires', [CommentaireController::class, 'index']);
+Route::get('/commentaires/{idCommentaire}', [CommentaireController::class,'show']);
+Route::post('/commentaires', [CommentaireController::class, 'store']);
+Route::put('/commentaires/{idCommentaire}', [CommentaireController::class, 'update']);
+Route::delete('/commentaires/{idCommentaire}', [CommentaireController::class, 'destroy']);
+Route::get('total-commentaires', [CommentaireController::class, 'getTotalCommentaires']);
+
+
+
+// Route pour like
+//Route::post('/like/toggle/{postId}', [LikeController::class, 'toggleLike']);
+Route::get('/likes', [LikeController::class, 'index']);
+Route::get('/likes/total', [LikeController::class, 'getTotalLikes']);
+Route::post('/like/{postId}', [LikeController::class, 'toggleLike']);
+
+
+
+//Route pour medias
+Route::post('medias', [MediaController::class, 'store']);
+Route::get('posts/{postId}/medias', [MediaController::class, 'index']);
+Route::get('medias/{idMedia}', [MediaController::class, 'show']);
+Route::delete('medias/{idMedia}', [MediaController::class, 'destroy']);
+
+//message
+Route::delete('/messages/{id}', [MessageController::class, 'deleteMessage']);
+Route::post('messages', [MessageController::class, 'store']);
+Route::get('/messages', [MessageController::class, 'index']);
+Route::get('/messages/destinataire', [MessageController::class, 'getMessagesByDestinataire']);
+Route::get('/messages/expediteur', [MessageController::class, 'getMessagesByExpediteur']);
+Route::get('/messages/count/{id}', [MessageController::class, 'countMessagesByDestinataire']);
+Route::patch('/messages/{id}/mark-as-read', [MessageController::class, 'markAsRead']);
+Route::get('/messages/unread/{destinataireId}', [MessageController::class, 'getUnreadMessages']);
+
+
+//post
+Route::post('/posts', [PostController::class, 'store']);
+Route::get('/posts/filter-by-type', [PostController::class, 'filterByType']);
+Route::get('/posts', [PostController::class, 'index']);
+Route::get('/posts/user', [PostController::class, 'getPostsByUser']);
+Route::delete('/posts/{id}', [PostController::class, 'deletePost']);
+
+
+
+
+
+
 
 
 
