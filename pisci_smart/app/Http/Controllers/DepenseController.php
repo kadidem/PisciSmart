@@ -31,7 +31,7 @@ class DepenseController extends Controller
     {
         $request->validate([
             'nom' => 'required|string',
-            'montant' => 'required|numeric',
+            'montant' => 'required|numeric|min:1',
             'date' => 'required|date|before_or_equal:today',
             'idCycle' => 'required|exists:cycles,idCycle'
 
@@ -72,7 +72,7 @@ class DepenseController extends Controller
     {
         $request->validate([
             'nom' => 'required|string',
-            'montant' => 'required|numeric',
+            'montant' => 'required|numeric|min:1',
             'date' => 'required|date|before_or_equal:today',
             'idCycle' => 'required|exists:cycles,idCycle'
 

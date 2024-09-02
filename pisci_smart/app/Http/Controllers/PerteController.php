@@ -30,7 +30,7 @@ class PerteController extends Controller
     {
         $request->validate([
             'nom' => 'required|string',
-            'NbreMort' => 'required|numeric',
+            'NbreMort' => 'required|numeric|min:1',
             'Date' => 'required|Date|before_or_equal:today',
             'idCycle' => 'required|exists:cycles,idCycle'
 
@@ -74,7 +74,7 @@ class PerteController extends Controller
     {
         $request->validate([
             'nom' => 'required|string',
-            'NbreMort' => 'required|numeric',
+            'NbreMort' => 'required|numeric|min:1',
             'Date' => 'required|Date|before_or_equal:today',
             'idCycle' => 'required|exists:cycles,idCycle'
 
