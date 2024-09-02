@@ -9,6 +9,19 @@ use App\Http\Controllers\VisiteurController;
 use App\Http\Controllers\DispositifController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\BassinController;
+use App\Http\Controllers\TypeDemandeController;
+use App\Http\Controllers\LikeController;
+use App\Http\Controllers\MessageController;
+use App\Http\Controllers\PostController;
+
+
+
+use App\Http\Controllers\MediaController;
+
+use App\Http\Controllers\CommentaireController;
+
+use App\Models\Dispositif;
+
 use App\Http\Controllers\CycleController;
 use App\Http\Controllers\DepenseController;
 use App\Http\Controllers\PerteController;
@@ -21,6 +34,7 @@ use App\Http\Controllers\RapportController;
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
+
 
 
 
@@ -94,9 +108,58 @@ Route::apiResource('ventes', VenteController::class);
 Route::apiResource('pertes', PerteController::class);
 // ->only(['index','show', 'store','update',])
 
+// type demande
+Route::post('/type-demandes', [TypeDemandeController::class, 'store']);
+Route::get('/type-demandes', [TypeDemandeController::class, 'index']); // Récupérer tous les types de demande
+
+
+// Routes pour les commentaires
+Route::get('/commentaires', [CommentaireController::class, 'index']);
+Route::get('/commentaires/{idCommentaire}', [CommentaireController::class,'show']);
+Route::post('/commentaires', [CommentaireController::class, 'store']);
+Route::put('/commentaires/{idCommentaire}', [CommentaireController::class, 'update']);
+Route::delete('/commentaires/{idCommentaire}', [CommentaireController::class, 'destroy']);
+Route::get('total-commentaires', [CommentaireController::class, 'getTotalCommentaires']);
 
 
 
+// Route pour like
+//Route::post('/like/toggle/{postId}', [LikeController::class, 'toggleLike']);
+Route::get('/likes', [LikeController::class, 'index']);
+Route::get('/likes/total', [LikeController::class, 'getTotalLikes']);
+Route::post('/like/{postId}', [LikeController::class, 'toggleLike']);
+
+
+
+//Route pour medias
+Route::post('medias', [MediaController::class, 'store']);
+Route::get('posts/{postId}/medias', [MediaController::class, 'index']);
+Route::get('medias/{idMedia}', [MediaController::class, 'show']);
+Route::delete('medias/{idMedia}', [MediaController::class, 'destroy']);
+
+//message
+Route::delete('/messages/{id}', [MessageController::class, 'deleteMessage']);
+Route::post('messages', [MessageController::class, 'store']);
+Route::get('/messages', [MessageController::class, 'index']);
+Route::get('/messages/destinataire', [MessageController::class, 'getMessagesByDestinataire']);
+Route::get('/messages/expediteur', [MessageController::class, 'getMessagesByExpediteur']);
+Route::get('/messages/count/{id}', [MessageController::class, 'countMessagesByDestinataire']);
+Route::patch('/messages/{id}/mark-as-read', [MessageController::class, 'markAsRead']);
+Route::get('/messages/unread/{destinataireId}', [MessageController::class, 'getUnreadMessages']);
+
+
+//post
+Route::post('/posts', [PostController::class, 'store']);
+Route::get('/posts/filter-by-type', [PostController::class, 'filterByType']);
+Route::get('/posts', [PostController::class, 'index']);
+Route::get('/posts/user', [PostController::class, 'getPostsByUser']);
+Route::delete('/posts/{id}', [PostController::class, 'deletePost']);
+
+
+
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout']);
 
 
 
