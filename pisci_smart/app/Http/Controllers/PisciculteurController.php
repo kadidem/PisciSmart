@@ -9,10 +9,11 @@ use Illuminate\Validation\ValidationException;
 class PisciculteurController extends Controller
 {
     //afficher tous les pisciculteurs
-    public function get_all_pisciculteur(){
+    public function getAllPisciculteur(){
         $pisciculteur=Pisciculteur::all();
         return response()->json( $pisciculteur);
     }
+
 
     public function getPisciculteurById($id)
 {
@@ -53,9 +54,10 @@ class PisciculteurController extends Controller
             $validated = $request->validate([
                 'nom' => 'required|string|max:255',
                 'prenom' => 'required|string|max:255',
-                'telephone' => 'required|string|unique:pisciculteurs|max:255', // Validation d'unicité
+                'telephone' => 'required|unique:pisciculteurs|max:20',
                 'adresse' => 'required|string|max:255',
-                'password' => 'required|string|min:8', // Assurez-vous d'ajouter le mot de passe
+                'password' => 'required|string|min:6',
+
             ]);
 
             // Ajouter le mot de passe haché
@@ -76,7 +78,7 @@ class PisciculteurController extends Controller
         }
     }
 
-    
+
 
     //supprimer un pisciculteur
     public function delete_pisciculteur($id)
