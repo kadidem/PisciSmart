@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employe;
+use App\Models\Pisciculteur;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB; // Assure-toi que cette ligne est présente
 use Illuminate\Http\Request;
@@ -49,29 +50,34 @@ class EmployeController extends Controller
 
     // Créer un employé
     public function create_employe(Request $request)
-    {
-        try {
-            $validated = $request->validate([
-                'nom' => 'required|string|max:255',
-                'prenom' => 'required|string|max:255',
-                'telephone' => 'required|string|max:255',
-                'adresse' => 'required|string|max:255',
-                'idPisciculteur' => 'required|integer|exists:pisciculteurs,idPisciculteur',
-            ]);
+{
+    try {
+        $validated = $request->validate([
+            'nom' => 'required|string|max:255',
+            'prenom' => 'required|string|max:255',
+            'telephone' => 'required|string|max:255|unique:employes',
+            'adresse' => 'required|string|max:255',
+            'idPisciculteur' => 'required|integer|exists:pisciculteurs,idPisciculteur',
+            'password' => 'required|string|min:8',
+        ]);
 
-            $newemploye = Employe::create($validated);
+        // Hacher le mot de passe avant de le sauvegarder dans la base de données
+        $validated['password'] = bcrypt($request->password);
 
-            return response()->json([
-                'message' => 'Employé ajouté avec succès.',
-                'employe' => $newemploye
-            ]);
-        } catch (\Exception $e) {
-            // Log the exception message
-            Log::error($e->getMessage());
-            // Return a generic error response
-            return response()->json(['error' => 'Pisciculteur introuvable.'], 500);
-        }
+        $newemploye = Employe::create($validated);
+
+        return response()->json([
+            'message' => 'Employé ajouté avec succès.',
+            'employe' => $newemploye
+        ]);
+    } catch (\Exception $e) {
+        // Log the exception message
+        Log::error($e->getMessage());
+        // Return a generic error response
+        return response()->json(['error' => 'Erreur lors de l\'ajout de l\'employé.'], 500);
     }
+}
+
 
     // Supprimer un employé
     public function delete_employe($id)
@@ -131,6 +137,25 @@ class EmployeController extends Controller
             return response()->json(['error' => 'mise à jour échoué! pisciculteur n/existe pas.'], 500);
         }
     }
+
+    //nbre total de pisciculteur par employé
+    public function getTotalEmployesByPisciculteur(Request $request)
+    {
+        $idPisciculteur = $request->input('idPisciculteur');
+
+        // Vérifier si le pisciculteur existe
+        $pisciculteur = Pisciculteur::find($idPisciculteur);
+
+        if (!$pisciculteur) {
+            return response()->json(['message' => 'Pisciculteur non trouvé'], 404);
+        }
+
+        // Récupérer le nombre total d'employés pour ce pisciculteur
+        $totalEmployes = Employe::where('idPisciculteur', $idPisciculteur)->count();
+
+        return response()->json(['total_employes' => $totalEmployes]);
+    }
+
 
 }
 

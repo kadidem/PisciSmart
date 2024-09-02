@@ -57,6 +57,7 @@ Route::get('/employe/{id}', [EmployeController::class, 'getEmployeById']);
 Route::post('/employe', [EmployeController::class, 'create_employe']);
 Route::put('/employe/{id}', [EmployeController::class, 'update_employe']);
 Route::delete('/employe/{id}', [EmployeController::class, 'delete_employe']);
+Route::get('/employes/total-par-pisciculteur', [EmployeController::class, 'getTotalEmployesByPisciculteur']);
 
 //nourriture
 Route::get('/nourriture', [NourritureController::class, 'get_all_nourriture']);
@@ -153,16 +154,6 @@ Route::get('/posts/filter-by-type', [PostController::class, 'filterByType']);
 Route::get('/posts', [PostController::class, 'index']);
 Route::get('/posts/user', [PostController::class, 'getPostsByUser']);
 Route::delete('/posts/{id}', [PostController::class, 'deletePost']);
-
-
-
-
-
-
-
-
-
-
 
 
 
