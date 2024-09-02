@@ -25,29 +25,40 @@ class PostController extends Controller
 
 
     // Méthode pour créer un post
-    public function store(Request $request)
-    {
-        // Valider les données
-        $validatedData = $request->validate([
-            'idPisciculteur' => 'nullable|exists:pisciculteurs,idPisciculteur',
-            'idVisiteur' => 'nullable|exists:visiteurs,idVisiteur',
-            'idTypeDemande' => 'required|exists:type_demandes,idTypeDemande',
-            'contenu' => 'required|string',
-        ]);
+public function store(Request $request)
+{
+    // Valider les données
+    $validatedData = $request->validate([
+        'idPisciculteur' => 'nullable|exists:pisciculteurs,idPisciculteur',
+        'idVisiteur' => 'nullable|exists:visiteurs,idVisiteur',
+        'idTypeDemande' => 'required|exists:type_demandes,idTypeDemande',
+        'contenu' => 'required|string',
+    ]);
 
-        $post = Post::create($validatedData);
-
-        $post->formatted_time = Carbon::parse($post->created_at)->diffForHumans();
-
-        // Retirer les champs created_at et updated_at de la réponse
-        $post->makeHidden(['created_at', 'updated_at']);
-
-        // Retourner la réponse JSON
-        return response()->json([
-            'message' => 'Post créé avec succès.',
-            'post' => $post
-        ], 201);
+    // Vérifier qu'au moins un des deux champs (idPisciculteur ou idVisiteur) est présent
+    if (!$request->idPisciculteur && !$request->idVisiteur) {
+        return response()->json(['message' => 'ID du pisciculteur ou du visiteur requis.'], 400);
     }
+
+    // Vérifier que les deux champs ne sont pas présents en même temps
+    if ($request->idPisciculteur && $request->idVisiteur) {
+        return response()->json(['message' => 'Vous ne pouvez pas spécifier à la fois un pisciculteur et un visiteur.'], 400);
+    }
+
+    $post = Post::create($validatedData);
+
+    $post->formatted_time = Carbon::parse($post->created_at)->diffForHumans();
+
+    // Retirer les champs created_at et updated_at de la réponse
+    $post->makeHidden(['created_at', 'updated_at']);
+
+    // Retourner la réponse JSON
+    return response()->json([
+        'message' => 'Post créé avec succès.',
+        'post' => $post
+    ], 201);
+}
+
 
 
 
@@ -152,10 +163,5 @@ class PostController extends Controller
     // Retourner une réponse de succès
     return response()->json(['message' => 'Post supprimé avec succès.'], 200);
 }
-
-
-
-
-
 
 }
