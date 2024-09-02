@@ -21,6 +21,7 @@ use App\Http\Controllers\MediaController;
 use App\Http\Controllers\CommentaireController;
 
 use App\Models\Dispositif;
+
 use App\Http\Controllers\CycleController;
 use App\Http\Controllers\DepenseController;
 use App\Http\Controllers\PerteController;
@@ -155,6 +156,11 @@ Route::get('/posts', [PostController::class, 'index']);
 Route::get('/posts/user', [PostController::class, 'getPostsByUser']);
 Route::delete('/posts/{id}', [PostController::class, 'deletePost']);
 
+
+
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout']);
 
 
 
