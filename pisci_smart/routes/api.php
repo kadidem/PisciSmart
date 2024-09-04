@@ -13,8 +13,8 @@ use App\Http\Controllers\TypeDemandeController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\PostController;
-
-
+use App\Http\Controllers\StatistiquesController;
+use App\Http\Controllers\AdminController;
 
 use App\Http\Controllers\MediaController;
 
@@ -103,7 +103,9 @@ Route::put('/bassin/{id}', [BassinController::class, 'update_Bassin']);
 Route::delete('/bassin/{id}', [BassinController::class, 'delete_Bassin']);
 
 //cycle,vente,depense,perte
-Route::apiResource('cycles', CycleController::class);
+// Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('cycles', CycleController::class);
+// });
 Route::apiResource('depenses', DepenseController::class);
 Route::apiResource('ventes', VenteController::class);
 Route::apiResource('pertes', PerteController::class);
@@ -158,6 +160,7 @@ Route::delete('/posts/{id}', [PostController::class, 'deletePost']);
 
 
 
+// connexion,inscription,authentification
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
@@ -167,6 +170,19 @@ Route::post('/logout', [AuthController::class, 'logout']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
+
+
+// statistiques (pisciculteurs,employe, visiteurs)
+Route::get('/statistiques-utilisateurs', [StatistiquesController::class, 'getStatistiquesUtilisateurs']);
+//details par utilisateurs
+Route::get('/details-utilisateurs', [StatistiquesController::class, 'getDetailsUtilisateurs']);
+
+
+
+// desactiver et activer compte
+Route::post('/admin/desactiver-compte/{id}/{type}', [AdminController::class, 'desactiverCompte']);
+Route::post('/admin/activer-compte/{id}/{type}', [AdminController::class, 'activerCompte']);
+
 
 Route::get('/notifications/pisciculteur/{idPisciculteur}', [CycleController::class, 'getPisciculteurNotifications']);
 Route::get('/notifications/employe/{idEmploye}', [CycleController::class, 'getEmployeNotifications']);

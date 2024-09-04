@@ -14,7 +14,7 @@ class Visiteur extends Authenticatable
     use HasApiTokens;
 
     // Définir les champs que vous pouvez remplir en masse
-    protected $fillable = ['nom', 'prenom', 'adresse', 'telephone', 'password'];
+    protected $fillable = ['nom', 'prenom', 'adresse', 'telephone', 'password', 'status'];
 
     // Définir la clé primaire
     protected $primaryKey = 'idVisiteur';
