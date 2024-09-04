@@ -11,7 +11,7 @@ class Employe extends Authenticatable
 {
     use HasApiTokens;
     use HasFactory;
-    protected $fillable= ['nom','prenom','adresse', 'telephone', 'idPisciculteur', 'password',];
+    protected $fillable= ['nom','prenom','adresse', 'telephone', 'idPisciculteur', 'password', 'status',];
     protected $primaryKey='idEmploye';
 
     public $timestamps = false;
@@ -19,4 +19,8 @@ class Employe extends Authenticatable
         'password',
         'remember_token',
     ];
+    public function pisciculteur()
+    {
+        return $this->belongsTo(Pisciculteur::class, 'idPisciculteur');
+    }
 }

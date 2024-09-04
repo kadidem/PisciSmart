@@ -6,7 +6,10 @@ use App\Models\Bassin;
 use App\Models\Cycle;
 use App\Models\Vente;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+
+
 use App\Models\PisciculteurNotification;
 
 class CycleController extends Controller
@@ -106,6 +109,16 @@ class CycleController extends Controller
 
     public function store(Request $request)
     {
+
+    // // Récupérer l'utilisateur connecté (Pisciculteur)
+    // $user = Auth::guard('sanctum')->user();
+
+    // // Vérifier si le compte est désactivé
+    // if ($user->status == 0) {
+    //     return response()->json(['message' => 'Votre compte est désactivé. Vous ne pouvez pas ajouter de cycle.'], 403);
+    // }
+
+
         $validatedData = $request->validate([
             'AgePoisson' => 'required|integer',
             'NbrePoisson' => 'required|integer',
@@ -125,6 +138,21 @@ class CycleController extends Controller
      if (!$bassin) {
     return response()->json(['message' => 'Bassin non trouvé'], 404);
      }
+
+
+    // Vérifier s'il existe déjà un cycle en cours dans ce bassin
+    $cycleEnCours = Cycle::where('idBassin', $request->idBassin)
+    ->where('DateFin', '>', now()) // Si la date de fin est supérieure à la date actuelle, le cycle est toujours en cours
+    ->first();
+
+    if ($cycleEnCours) {
+    return response()->json([
+        'error' => 'Un cycle est déjà en cours dans ce bassin. Vous devez terminer ce cycle avant d\'en créer un nouveau.'
+    ], 422);
+    }
+
+
+
         // Calculer automatiquement la date de fin (ajouter 6 mois à la date de début)
         $validatedData['DateFin'] = Carbon::parse($validatedData['DateDebut'])->addMonths(6);
 
@@ -133,16 +161,16 @@ class CycleController extends Controller
         // Déterminer les normes en fonction de la dimension et de l'unité du bassin
         $dimension = $bassin->dimension;
         $unite = $bassin->unite;
-    // Logique de validation des poissons en fonction de la dimension du bassin
-    if ($unite == 'm3') {
-        // Validation pour les bassins en m3
-        $maxPoisson = $dimension * 100; // Exemple : 1m3 = 100 poissons
-    } elseif ($unite == 'm2') {
-        // Validation pour les bassins en m2
-        $maxPoisson = $dimension * 45; // Exemple : 1m2 = 45 poissons
-    } else {
-        return response()->json(['message' => "Unité non reconnue"], 400);
-    }
+        // Logique de validation des poissons en fonction de la dimension du bassin
+        if ($unite == 'm3') {
+            // Validation pour les bassins en m3
+            $maxPoisson = $dimension * 100; // Exemple : 1m3 = 100 poissons
+        } elseif ($unite == 'm2') {
+            // Validation pour les bassins en m2
+            $maxPoisson = $dimension * 45; // Exemple : 1m2 = 45 poissons
+        } else {
+            return response()->json(['message' => "Unité non reconnue"], 400);
+        }
         $maxPoissons = $this->getMaxPoissonsForBassin($dimension, $unite);
 
         // Vérifier que le nombre de poissons respecte les normes

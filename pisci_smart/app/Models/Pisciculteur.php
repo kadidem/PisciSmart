@@ -13,7 +13,7 @@ class Pisciculteur extends Authenticatable
     use HasFactory;
     use HasApiTokens;
     // Définir les champs que vous pouvez remplir en masse
-    protected $fillable = ['nom', 'prenom', 'adresse', 'telephone', 'password','idDispo',];
+    protected $fillable = ['nom', 'prenom', 'adresse', 'telephone', 'password','idDispo','status',];
 
     // Définir la clé primaire
     protected $primaryKey = 'idPisciculteur';
