@@ -12,109 +12,201 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
+
+
     // Inscription
-    public function register(Request $request)
-    {
-        $request->validate([
-            'role' => 'required|in:pisciculteur,visiteur,employe',
-            'nom' => 'required|string',
-            'prenom' => 'required|string',
-            'prenom' => 'required|string',
-            'telephone' => 'required|unique:pisciculteurs,telephone|unique:visiteurs,telephone|unique:employes,telephone',
-            'password' => 'required|confirmed|min:6',
-            // 'idDispo' => 'required_if:role,pisciculteur|exists:dispositifs,idDispo',
-            'idPisciculteur' => 'required_if:role,employe|exists:pisciculteurs,idPisciculteur',
-        ]);
+public function register(Request $request)
+{
+    // Valider les données de la requête
+    $request->validate([
+        'nom' => 'required|string',
+        'prenom' => 'required|string',
+        'telephone' => 'required|unique:pisciculteurs,telephone|unique:visiteurs,telephone|unique:employes,telephone',
+        'password' => 'required|confirmed|min:6',
+        'adresse' => 'required|string|max:255'
+    ]);
 
-        $data = [
-            'nom' => $request->nom,
-            'prenom' => $request->prenom,
-            'telephone' => $request->telephone,
-            'adresse' => $request->adresse,
-            'password' => Hash::make($request->password),
-        ];
+    // Préparer les données
+    $data = [
+        'nom' => $request->nom,
+        'prenom' => $request->prenom,
+        'telephone' => $request->telephone,
+        'adresse' => $request->adresse,
+        'password' => Hash::make($request->password),
+    ];
 
-        if ($request->role === 'pisciculteur') {
-            // $data['idDispo'] = $request->idDispo;
-            $user = Pisciculteur::create($data);
-        } elseif ($request->role === 'visiteur') {
-            $user = Visiteur::create($data);
-        } elseif ($request->role === 'employe') {
-            $data['idPisciculteur'] = $request->idPisciculteur;
-            $user = Employe::create($data);
-        }
+    // Créer l'utilisateur dans la table `pisciculteurs` (par défaut)
+    $user = Pisciculteur::create($data);
 
-        return response()->json(['message' => 'Utilisateur créé avec succès'], 201);
+    return response()->json(['message' => 'Utilisateur créé avec succès'], 201);
+}
+
+
+
+// Connexion
+public function login(Request $request)
+{
+    // Valider les données de la requête
+    $request->validate([
+        'telephone' => 'required',
+        'password' => 'required',
+    ]);
+
+    // Chercher l'utilisateur dans toutes les tables possibles
+    $user = Pisciculteur::where('telephone', $request->telephone)->first()
+        ?? Visiteur::where('telephone', $request->telephone)->first()
+        ?? Employe::where('telephone', $request->telephone)->first();
+
+    // Vérifier si l'utilisateur existe et si le mot de passe est correct
+    if (!$user || !Hash::check($request->password, $user->password)) {
+        return response()->json(['message' => 'Les informations d’identification fournies sont incorrectes.'], 401);
     }
 
-    // Connexion
-    public function login(Request $request)
-    {
-        $request->validate([
-            'telephone' => 'required',
-            'password' => 'required',
-            'role' => 'required|in:pisciculteur,visiteur,employe',
-        ]);
+    // Créer un token d'authentification
+    $token = $user->createToken('auth_token')->plainTextToken;
 
-        if ($request->role === 'pisciculteur') {
-            $user = Pisciculteur::where('telephone', $request->telephone)->first();
-        } elseif ($request->role === 'visiteur') {
-            $user = Visiteur::where('telephone', $request->telephone)->first();
-        } elseif ($request->role === 'employe') {
-            $user = Employe::where('telephone', $request->telephone)->first();
-        }
-         // Ajoutez cette ligne pour voir si un utilisateur est trouvé
-    if (!$user) {
-        return response()->json(['message' => 'Utilisateur non trouvé'], 404);
-    }
+    return response()->json([
+        'message' => 'Connexion réussie',
+        'access_token' => $token,
+        'token_type' => 'Bearer',
+    ], 200);
+}
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'telephone' => ['Les informations d’identification fournies sont incorrectes.'],
-            ]);
-        }
 
-        $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
-            'message' => 'Connexion réussie',
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-        ]);
-    }
+// Déconnexion
+public function logout(Request $request)
+{
+   // Vérifier si l'utilisateur est authentifié
+   if ($request->user()) {
+    // Supprimer le token actif de l'utilisateur
+    $request->user()->currentAccessToken()->delete();
 
-    // Déconnexion
-    // public function logout(Request $request)
+    return response()->json([
+        'message' => 'Déconnecté avec succès',
+    ], 200);
+}
+
+return response()->json([
+    'message' => 'Aucun utilisateur authentifié trouvé.',
+], 401);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // // Inscription
+    // public function register(Request $request)
     // {
-    //    // Supprimer le token actif de l'utilisateur
-    //   $request->user()->currentAccessToken()->delete();
+    //     $request->validate([
+    //         // 'role' => 'required|in:pisciculteur,visiteur,employe',
+    //         'nom' => 'required|string',
+    //         'prenom' => 'required|string',
+    //         'prenom' => 'required|string',
+    //         'telephone' => 'required|unique:pisciculteurs,telephone|unique:visiteurs,telephone|unique:employes,telephone',
+    //         'password' => 'required|confirmed|min:6',
+    //         // 'idDispo' => 'required_if:role,pisciculteur|exists:dispositifs,idDispo',
+    //         'idPisciculteur' => 'required_if:role,employe|exists:pisciculteurs,idPisciculteur',
+    //     ]);
 
-    //  return response()->json([
-    //      'message' => 'Déconnecté avec succès',
-    //  ]);
+    //     $data = [
+    //         'nom' => $request->nom,
+    //         'prenom' => $request->prenom,
+    //         'telephone' => $request->telephone,
+    //         'adresse' => $request->adresse,
+    //         'password' => Hash::make($request->password),
+    //     ];
+
+    //     // if ($request->role === 'pisciculteur') {
+    //     //     // $data['idDispo'] = $request->idDispo;
+    //     //     $user = Pisciculteur::create($data);
+    //     // } elseif ($request->role === 'visiteur') {
+    //     //     $user = Visiteur::create($data);
+    //     // } elseif ($request->role === 'employe') {
+    //     //     $data['idPisciculteur'] = $request->idPisciculteur;
+    //     //     $user = Employe::create($data);
+    //     // }
+
+    //     return response()->json(['message' => 'Utilisateur créé avec succès'], 201);
     // }
 
-    public function logout(Request $request)
-    {
+    // // Connexion
+    // public function login(Request $request)
+    // {
+    //     $request->validate([
+    //         'telephone' => 'required',
+    //         'password' => 'required',
+    //         'role' => 'required|in:pisciculteur,visiteur,employe',
+    //     ]);
 
-        // Supprimer le token actif de l'utilisateur
-        switch ($request->role) {
-            case 'pisciculteur':
-                $user = Pisciculteur::where('telephone', $request->telephone)->first();
-                break;
-            case 'employe':
-                $user = Employe::where('telephone', $request->telephone)->first();
-                break;
-            default:
-                $user = Visiteur::where('telephone', $request->telephone)->first();
-                break;
-        }
-        $user->tokens()->delete();
+    //     if ($request->role === 'pisciculteur') {
+    //         $user = Pisciculteur::where('telephone', $request->telephone)->first();
+    //     } elseif ($request->role === 'visiteur') {
+    //         $user = Visiteur::where('telephone', $request->telephone)->first();
+    //     } elseif ($request->role === 'employe') {
+    //         $user = Employe::where('telephone', $request->telephone)->first();
+    //     }
+    //      // Ajoutez cette ligne pour voir si un utilisateur est trouvé
+    // if (!$user) {
+    //     return response()->json(['message' => 'Utilisateur non trouvé'], 404);
+    // }
 
-        return [
-            'message' => 'Déconnecté avec succès',
-        ];
-    }
+    //     if (!$user || !Hash::check($request->password, $user->password)) {
+    //         throw ValidationException::withMessages([
+    //             'telephone' => ['Les informations d’identification fournies sont incorrectes.'],
+    //         ]);
+    //     }
+
+    //     $token = $user->createToken('auth_token')->plainTextToken;
+
+    //     return response()->json([
+    //         'message' => 'Connexion réussie',
+    //         'access_token' => $token,
+    //         'token_type' => 'Bearer',
+    //     ]);
+    // }
+
+    // // Déconnexion
+    // // public function logout(Request $request)
+    // // {
+    // //    // Supprimer le token actif de l'utilisateur
+    // //   $request->user()->currentAccessToken()->delete();
+
+    // //  return response()->json([
+    // //      'message' => 'Déconnecté avec succès',
+    // //  ]);
+    // // }
+
+    // public function logout(Request $request)
+    // {
+
+    //     // Supprimer le token actif de l'utilisateur
+    //     switch ($request->role) {
+    //         case 'pisciculteur':
+    //             $user = Pisciculteur::where('telephone', $request->telephone)->first();
+    //             break;
+    //         case 'employe':
+    //             $user = Employe::where('telephone', $request->telephone)->first();
+    //             break;
+    //         default:
+    //             $user = Visiteur::where('telephone', $request->telephone)->first();
+    //             break;
+    //     }
+    //     $user->tokens()->delete();
+
+    //     return [
+    //         'message' => 'Déconnecté avec succès',
+    //     ];
+    // }
 
 }
 

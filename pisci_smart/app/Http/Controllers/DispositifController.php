@@ -8,8 +8,7 @@ use Illuminate\Support\Facades\Log;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Http;
-
-
+use Illuminate\Support\Str;
 
 
 
@@ -38,10 +37,13 @@ class DispositifController extends Controller
     $qrCode = QrCode::format('png')
                     ->size(200) // Taille du QR code
                     // ->merge($logoPath, 0.6, true) // Ajouter le logo avec une taille ajustée
-                    ->generate($idDispo);
+                    ->generate($dispositif->numero_serie);
 
     // Retourner le QR code comme une image
+
+
     return response($qrCode)->header('Content-Type', 'image/png');
+
     }
 
 
@@ -130,10 +132,20 @@ class DispositifController extends Controller
                 'longitude' => 'required|string|max:255',
                 'latitude' => 'required|string|max:255',
                 'idPisciculteur' => 'required|integer|exists:pisciculteurs,idPisciculteur', // Validation de l'existence de l'idPisciculteur
+
             ]);
+
+
+             // Générer un numéro de série unique de 4 caractères (alphanumérique)
+            $numeroSerie = $this->generateNumeroSerie();
+
+            // Ajouter le numéro de série aux données validées
+            $validated['numero_serie'] = $numeroSerie;
+
 
             // Créer un nouveau dispositif
             $newdispositif = Dispositif::create($validated);
+
 
             // Retourner une réponse JSON avec le dispositif créé
             return response()->json([
@@ -150,6 +162,21 @@ class DispositifController extends Controller
             return response()->json(['error' => 'Une erreur est survenue lors de la création du dispositif.'], 500);
         }
     }
+
+
+    // Fonction pour générer un numéro de série unique de 4 caractères
+    private function generateNumeroSerie()
+    {
+        do {
+            // Générer une chaîne aléatoire de 4 caractères (alphanumérique)
+            $numeroSerie = strtoupper(Str::random(4));
+        } while (Dispositif::where('numero_serie', $numeroSerie)->exists()); // S'assurer que le numéro de série est unique
+
+        return $numeroSerie;
+    }
+
+
+
 
 
        // Modifier un dispositif existant
