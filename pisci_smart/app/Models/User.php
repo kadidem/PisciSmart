@@ -19,7 +19,15 @@ class User extends Authenticatable
      */
     public $timestamps = false;
     protected $fillable = [
-       'nom', 'prenom', 'telephone', 'adresse', 'idDispo','idPisciculteur', 'password',
+
+        'nom',
+        'prenom',
+        'telephone',
+        'adresse',
+        'idDispo',
+        'idPisciculteur',
+        'password',
+
     ];
 
 
@@ -39,11 +47,11 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-      // Password Hashing
-      public function setPasswordAttribute($value)
-      {
-          $this->attributes['password'] = bcrypt($value);
-      }
+    // Password Hashing
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['password'] = bcrypt($value);
+    }
     /**
      * Get the attributes that should be cast.
      *
