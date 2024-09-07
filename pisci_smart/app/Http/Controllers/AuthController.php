@@ -82,23 +82,23 @@ class AuthController extends Controller
 
 
 
-    // Déconnexion
-    public function logout(Request $request)
-    {
-        // Vérifier si l'utilisateur est authentifié
-        if ($request->user()) {
-            // Supprimer le token actif de l'utilisateur
-            $request->user()->currentAccessToken()->delete();
+// Déconnexion
+public function logout(Request $request)
+{
+   // Vérifier si l'utilisateur est authentifié
+   if ($request->user()) {
+    // Supprimer le token actif de l'utilisateur
+    $request->user()->currentAccessToken()->delete();
 
-            return response()->json([
-                'message' => 'Déconnecté avec succès',
-            ], 200);
-        }
+    return response()->json([
+        'message' => 'Déconnecté avec succès',
+    ], 200);
+}
 
-        return response()->json([
-            'message' => 'Aucun utilisateur authentifié trouvé.',
-        ], 401);
-    }
+return response()->json([
+    'message' => 'Aucun utilisateur authentifié trouvé.',
+], 401);
+}
 
 
 
