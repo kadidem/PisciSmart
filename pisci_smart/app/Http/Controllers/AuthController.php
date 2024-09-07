@@ -77,19 +77,34 @@ public function login(Request $request)
 // Déconnexion
 public function logout(Request $request)
 {
-   // Vérifier si l'utilisateur est authentifié
-   if ($request->user()) {
+    // Vérifier si l'utilisateur est authentifié
+    $user = Pisciculteur::where('telephone', $request->telephone)->first()
+        ?? Visiteur::where('telephone', $request->telephone)->first()
+        ?? Employe::where('telephone', $request->telephone)->first();
+        // Supprimer tous les tokens actifs de l'utilisateur
+        $user->tokens()->delete();
+
+        return response()->json([
+            'message' => 'Déconnecté avec succès',
+        ], 200);
+
     // Supprimer le token actif de l'utilisateur
-    $request->user()->currentAccessToken()->delete();
+    //     switch ($request->role) {
+    //         case 'pisciculteur':
+    //             $user = Pisciculteur::where('telephone', $request->telephone)->first();
+    //             break;
+    //         case 'employe':
+    //             $user = Employe::where('telephone', $request->telephone)->first();
+    //             break;
+    //         default:
+    //             $user = Visiteur::where('telephone', $request->telephone)->first();
+    //             break;
+    //     }
+    //     $user->tokens()->delete();
 
-    return response()->json([
-        'message' => 'Déconnecté avec succès',
-    ], 200);
-}
-
-return response()->json([
-    'message' => 'Aucun utilisateur authentifié trouvé.',
-], 401);
+    //     return [
+    //         'message' => 'Déconnecté avec succès',
+    //     ];
 }
 
 
