@@ -15,82 +15,82 @@ class AuthController extends Controller
 
 
     // Inscription
-public function register(Request $request)
-{
-    // Valider les données de la requête
-    $request->validate([
-        'nom' => 'required|string',
-        'prenom' => 'required|string',
-        'telephone' => 'required|unique:pisciculteurs,telephone|unique:visiteurs,telephone|unique:employes,telephone',
-        'password' => 'required|confirmed|min:6',
-        'adresse' => 'required|string|max:255'
-    ]);
+    public function register(Request $request)
+    {
+        // Valider les données de la requête
+        $request->validate([
+            'nom' => 'required|string',
+            'prenom' => 'required|string',
+            'telephone' => 'required|unique:pisciculteurs,telephone|unique:visiteurs,telephone|unique:employes,telephone',
+            'password' => 'required|confirmed|min:6',
+            'adresse' => 'required|string|max:255'
+        ]);
 
-    // Préparer les données
-    $data = [
-        'nom' => $request->nom,
-        'prenom' => $request->prenom,
-        'telephone' => $request->telephone,
-        'adresse' => $request->adresse,
-        'password' => Hash::make($request->password),
-    ];
+        // Préparer les données
+        $data = [
+            'nom' => $request->nom,
+            'prenom' => $request->prenom,
+            'telephone' => $request->telephone,
+            'adresse' => $request->adresse,
+            'password' => Hash::make($request->password),
+        ];
 
-    // Créer l'utilisateur dans la table `pisciculteurs` (par défaut)
-    $user = Pisciculteur::create($data);
+        // Créer l'utilisateur dans la table `pisciculteurs` (par défaut)
+        $user = User::create($data);
 
-    return response()->json(['message' => 'Utilisateur créé avec succès'], 201);
-}
-
-
-
-// Connexion
-public function login(Request $request)
-{
-    // Valider les données de la requête
-    $request->validate([
-        'telephone' => 'required',
-        'password' => 'required',
-    ]);
-
-    // Chercher l'utilisateur dans toutes les tables possibles
-    $user = Pisciculteur::where('telephone', $request->telephone)->first()
-        ?? Visiteur::where('telephone', $request->telephone)->first()
-        ?? Employe::where('telephone', $request->telephone)->first();
-
-    // Vérifier si l'utilisateur existe et si le mot de passe est correct
-    if (!$user || !Hash::check($request->password, $user->password)) {
-        return response()->json(['message' => 'Les informations d’identification fournies sont incorrectes.'], 401);
+        return response()->json(['message' => 'Utilisateur créé avec succès'], 201);
     }
 
-    // Créer un token d'authentification
-    $token = $user->createToken('auth_token')->plainTextToken;
-
-    return response()->json([
-        'message' => 'Connexion réussie',
-        'access_token' => $token,
-        'token_type' => 'Bearer',
-    ], 200);
-}
 
 
+    // Connexion
+    public function login(Request $request)
+    {
+        // Valider les données de la requête
+        $request->validate([
+            'telephone' => 'required',
+            'password' => 'required',
+        ]);
 
-// Déconnexion
-public function logout(Request $request)
-{
-   // Vérifier si l'utilisateur est authentifié
-   if ($request->user()) {
-    // Supprimer le token actif de l'utilisateur
-    $request->user()->currentAccessToken()->delete();
+        // Chercher l'utilisateur dans toutes les tables possibles
+        $user = User::where('telephone', $request->telephone)->first();
+        //?? Visiteur::where('telephone', $request->telephone)->first()
+        //?? Employe::where('telephone', $request->telephone)->first();
 
-    return response()->json([
-        'message' => 'Déconnecté avec succès',
-    ], 200);
-}
+        // Vérifier si l'utilisateur existe et si le mot de passe est correct
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Les informations d’identification fournies sont incorrectes.'], 401);
+        }
 
-return response()->json([
-    'message' => 'Aucun utilisateur authentifié trouvé.',
-], 401);
-}
+        // Créer un token d'authentification
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Connexion réussie',
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+        ], 200);
+    }
+
+
+
+    // Déconnexion
+    public function logout(Request $request)
+    {
+        // Vérifier si l'utilisateur est authentifié
+        if ($request->user()) {
+            // Supprimer le token actif de l'utilisateur
+            $request->user()->currentAccessToken()->delete();
+
+            return response()->json([
+                'message' => 'Déconnecté avec succès',
+            ], 200);
+        }
+
+        return response()->json([
+            'message' => 'Aucun utilisateur authentifié trouvé.',
+        ], 401);
+    }
 
 
 
@@ -209,4 +209,3 @@ return response()->json([
     // }
 
 }
-
