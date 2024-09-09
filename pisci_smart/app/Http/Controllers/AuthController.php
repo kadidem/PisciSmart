@@ -31,7 +31,7 @@ class AuthController extends Controller
             'nom' => $request->nom,
             'prenom' => $request->prenom,
             'telephone' => $request->telephone,
-            //'adresse' => $request->adresse,
+            //'adresse' => $request->adresse,j
             'password' => Hash::make($request->password),
         ];
 
