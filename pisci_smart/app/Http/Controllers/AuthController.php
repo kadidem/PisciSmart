@@ -23,7 +23,7 @@ class AuthController extends Controller
             'prenom' => 'required|string',
             'telephone' => 'required|unique:pisciculteurs,telephone|unique:visiteurs,telephone|unique:employes,telephone',
             'password' => 'required|confirmed|min:6',
-            //'adresse' => 'required|string|max:255'k
+            //'adresse' => 'required|string|max:255'kav
         ]);
 
         // Préparer les données
