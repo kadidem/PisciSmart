@@ -104,7 +104,7 @@ Route::delete('/bassin/{id}', [BassinController::class, 'delete_Bassin']);
 
 //cycle,vente,depense,perte
 // Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('cycles', CycleController::class);
+Route::apiResource('cycles', CycleController::class);
 // });
 Route::apiResource('depenses', DepenseController::class);
 Route::apiResource('ventes', VenteController::class);
@@ -118,7 +118,7 @@ Route::get('/type-demandes', [TypeDemandeController::class, 'index']); // Récup
 
 // Routes pour les commentaires
 Route::get('/commentaires', [CommentaireController::class, 'index']);
-Route::get('/commentaires/{idCommentaire}', [CommentaireController::class,'show']);
+Route::get('/commentaires/{idCommentaire}', [CommentaireController::class, 'show']);
 Route::post('/commentaires', [CommentaireController::class, 'store']);
 Route::put('/commentaires/{idCommentaire}', [CommentaireController::class, 'update']);
 Route::delete('/commentaires/{idCommentaire}', [CommentaireController::class, 'destroy']);
@@ -161,15 +161,16 @@ Route::delete('/posts/{id}', [PostController::class, 'deletePost']);
 
 
 // connexion,inscription,authentification
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout']);
-
-
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
+
+
+
+// Route::post('/register', [AuthController::class, 'register']);
+// Route::post('/login', [AuthController::class, 'login']);
+// Route::post('/logout', [AuthController::class, 'logout']);
 
 
 // statistiques (pisciculteurs,employe, visiteurs)
