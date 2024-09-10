@@ -17,6 +17,7 @@ return [
 
 
 
+    'allowed_origins' => [env('FRONTEND_URL', 'http://localhost:3000')],
 
     'paths' => ['api/*'], // Define the routes you want to apply CORS to
     'allowed_methods' => ['*'], // Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)

@@ -22,19 +22,13 @@ class User extends Authenticatable
         'nom',
         'prenom',
         'telephone',
-        'adresse',
-        'idDispo',
-        'idPisciculteur',
         'password',
     ];
 
 
 
     // Relation avec le modèle Dispositif
-    public function dispositif()
-    {
-        return $this->belongsTo(Dispositif::class, 'idDispo');
-    }
+ 
     /**
      * The attributes that should be hidden for serialization.
      *
