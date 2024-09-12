@@ -22,7 +22,7 @@ class AuthController extends Controller
             'nom' => 'required|string',
             'prenom' => 'required|string',
             'telephone' => 'required|string',
-            'password' => 'required|confirmed|min:6',
+            'password' => 'required|min:6',
             //'adresse' => 'required|string|max:255'kav
         ]);
 
@@ -54,12 +54,19 @@ class AuthController extends Controller
 
         // Chercher l'utilisateur dans toutes les tables possibles
         $user = User::where('telephone', $request->telephone)->first();
-        //?? Visiteur::where('telephone', $request->telephone)->first()
-        //?? Employe::where('telephone', $request->telephone)->first();
 
-        // Vérifier si l'utilisateur existe et si le mot de passe est correct
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['message' => 'Les informations d’identification fournies sont incorrectes.'], 401);
+        // Vérifier si l'utilisateur est trouvé
+        if (!$user) {
+            return response()->json(['message' => 'Utilisateur non trouvé'], 404);
+        }
+
+        // Affichez les valeurs du mot de passe haché et du mot de passe de la requête
+        if (!Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'message' => 'Le mot de passe est incorrect.',
+                'mot_de_passe_hache' => $user->password,
+                'mot_de_passe_clair' => $request->password
+            ], 401);
         }
 
         // Créer un token d'authentification
@@ -71,6 +78,7 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
         ], 200);
     }
+
 
 
 

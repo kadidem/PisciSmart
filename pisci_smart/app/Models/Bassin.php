@@ -8,8 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Bassin extends Model
 {
     use HasFactory;
-    protected $fillable= ['nomBassin','dimension','description' , 'unite', 'idDispo'];
-    protected $primaryKey='idBassin';
 
+    // Les attributs qui peuvent être assignés en masse
+    protected $fillable = ['nomBassin', 'dimension', 'description', 'unite', 'idDispo', 'date'];
+
+    // Spécifier la clé primaire si elle n'est pas 'id'
+    protected $primaryKey = 'idBassin';
+
+    // Désactiver les timestamps si vous ne les utilisez pas
     public $timestamps = false;
 }

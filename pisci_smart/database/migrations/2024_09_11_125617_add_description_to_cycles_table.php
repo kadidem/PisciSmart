@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('commentaires', function (Blueprint $table) {
-            $table->foreignId('parent_id')->nullable()->constrained('commentaires', 'idCommentaire')->onDelete('cascade');
+        Schema::table('cycles', function (Blueprint $table) {
+            $table->string('description')->nullable(); // Ajoute le champ description, il est nullable
         });
     }
 
@@ -21,10 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('commentaires', function (Blueprint $table) {
-            $table->dropForeign(['parent_id']);
-            $table->dropColumn('parent_id');
+        Schema::table('cycles', function (Blueprint $table) {
+            $table->dropColumn('description'); // Supprime le champ description si la migration est annulée
         });
     }
 };
-

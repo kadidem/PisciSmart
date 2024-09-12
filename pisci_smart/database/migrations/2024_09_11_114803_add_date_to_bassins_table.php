@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('commentaires', function (Blueprint $table) {
-            $table->foreignId('parent_id')->nullable()->constrained('commentaires', 'idCommentaire')->onDelete('cascade');
+        Schema::table('bassins', function (Blueprint $table) {
+            $table->date('date')->after('description'); // Ajoute une colonne date après description
         });
     }
 
@@ -21,9 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('commentaires', function (Blueprint $table) {
-            $table->dropForeign(['parent_id']);
-            $table->dropColumn('parent_id');
+        Schema::table('bassins', function (Blueprint $table) {
+            $table->dropColumn('date'); // Supprime la colonne date
         });
     }
 };

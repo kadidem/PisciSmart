@@ -1,11 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
-use App\Models\Bassin;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Models\Bassin;
 
 class BassinController extends Controller
 {
@@ -16,85 +16,83 @@ class BassinController extends Controller
         return response()->json($bassin);
     }
 
+    // Afficher un bassin
+    public function getBassinById($id)
+    {
+        try {
+            $bassin = Bassin::find($id);
 
- // Afficher un bassin
- public function getBassinById($id)
- {
-     try {
-         $bassin = Bassin::find($id);
+            if (!$bassin) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Bassin non trouvé'
+                ], 404);
+            }
 
-         if (! $bassin) {
-             return response()->json([
-                 'status' => 'error',
-                 'message' => 'bassin non trouvé'
-             ], 404);
-         }
+            return response()->json([
+                'status' => 'success',
+                'data' => $bassin
+            ], 200);
 
-         return response()->json([
-             'status' => 'success',
-             'data' => $bassin
-         ], 200);
-
-     } catch (\Exception $e) {
-         return response()->json([
-             'status' => 'error',
-             'message' => 'Une erreur s\'est produite lors de la récupération du bassin.',
-             'error' => $e->getMessage()
-         ], 500);
-     }
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Une erreur s\'est produite lors de la récupération du bassin.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
-    //supprimer un bassin
-public function delete_bassin($id)
-{
-    $bassin = Bassin::find($id);
-    if ($bassin) {
-        $bassin->delete();
-        $res = [
-            "message" => "Supprimé avec succès",
-            "status" => 200,
-            "data" => $bassin,
-        ];
-    } else {
-        $res = [
-            "message" => "bassin non trouvé",
-            "status" => 404,
-        ];
+    // Supprimer un bassin
+    public function delete_bassin($id)
+    {
+        $bassin = Bassin::find($id);
+        if ($bassin) {
+            $bassin->delete();
+            $res = [
+                "message" => "Supprimé avec succès",
+                "status" => 200,
+                "data" => $bassin,
+            ];
+        } else {
+            $res = [
+                "message" => "Bassin non trouvé",
+                "status" => 404,
+            ];
+        }
+
+        return response()->json($res);
     }
 
-    return response()->json($res);
-}
+    // Créer un bassin
+    public function create_bassin(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'nomBassin' => 'required|string|max:255|unique:bassins,nomBassin',
+                'dimension' => 'required|numeric|min:1', // La dimension doit être un nombre positif
+                'unite' => 'required|in:m2,m3', // Valider que l'unité est soit m2, soit m3
+                'description' => 'required|string|max:255',
+                'idDispo' => 'required|integer|exists:dispositifs,idDispo',
+                'date' => 'required|date' // Ajouter la validation pour le champ date
+            ]);
 
-// Créer un bassin
-public function create_bassin(Request $request)
-{
-    try {
-        $validated = $request->validate([
-            'nomBassin' => 'required|string|max:255|unique:bassins,nomBassin',
+            $newbassin = Bassin::create($validated);
 
-            'dimension' => 'required|numeric|min:1', // La dimension doit être un nombre positif
-            'unite' => 'required|in:m2,m3', // Valider que l'unité est soit m2, soit m3
-            'description' => 'required|string|max:255',
-            'idDispo' => 'required|integer|exists:dispositifs,idDispo',
-        ]);
+            return response()->json([
+                'message' => 'Bassin ajouté avec succès.',
+                'bassin' => $newbassin
+            ]);
+        } catch (\Exception $e) {
+            // Log the exact exception message for debugging purposes
+            Log::error('Erreur lors de la création du bassin : ' . $e->getMessage());
 
-        $newbassin = Bassin::create($validated);
-
-        return response()->json([
-            'message' => 'Bassin ajouté avec succès.',
-            'bassin' =>  $newbassin
-        ]);
-    } catch (\Exception $e) {
-       // Log the exact exception message for debugging purposes
-       Log::error('Erreur lors de la création du bassin : ' . $e->getMessage());
-
-       // Return the actual error message in the response (temporarily, for debugging)
-       return response()->json(['error' => 'Une erreur est survenue: ' . $e->getMessage()], 500);
-   }
-
+            // Return the actual error message in the response (temporarily, for debugging)
+            return response()->json(['error' => 'Une erreur est survenue: ' . $e->getMessage()], 500);
+        }
     }
- // Modifier bassin
 
+    // Modifier bassin
     public function update_bassin(Request $request, $idBassin)
     {
         try {
@@ -120,6 +118,7 @@ public function create_bassin(Request $request)
                 'unite' => 'sometimes|in:m2,m3', // Valider que l'unité est soit m2, soit m3
                 'description' => 'required|string|max:255',
                 'idDispo' => 'required|integer|exists:dispositifs,idDispo',
+                'date' => 'sometimes|date' // Ajouter la validation pour le champ date
             ]);
 
             // Mise à jour des données du bassin
@@ -140,7 +139,5 @@ public function create_bassin(Request $request)
             return response()->json(['error' => 'Mise à jour échouée: ' . $e->getMessage()], 500);
         }
     }
-
-
-
 }
+

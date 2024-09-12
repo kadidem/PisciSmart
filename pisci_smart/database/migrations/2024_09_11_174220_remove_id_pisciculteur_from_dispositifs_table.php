@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('commentaires', function (Blueprint $table) {
-            $table->foreignId('parent_id')->nullable()->constrained('commentaires', 'idCommentaire')->onDelete('cascade');
+        Schema::table('dispositifs', function (Blueprint $table) {
+            $table->dropColumn('idPisciculteur');
         });
     }
 
@@ -21,10 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('commentaires', function (Blueprint $table) {
-            $table->dropForeign(['parent_id']);
-            $table->dropColumn('parent_id');
+        Schema::table('dispositifs', function (Blueprint $table) {
+            $table->unsignedBigInteger('idPisciculteur')->nullable();
         });
     }
 };
-
