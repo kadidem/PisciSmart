@@ -12,7 +12,7 @@ class Bassin extends Model
     // Les attributs qui peuvent être assignés en masse
     protected $fillable = ['nomBassin', 'dimension', 'description', 'unite', 'idDispo', 'date'];
 
-    // Spécifier la clé primaire si elle n'est pas 'id'
+    // Spécifier la clé primaire si elle n'est da,n pas 'id'
     protected $primaryKey = 'idBassin';
 
     // Désactiver les timestamps si vous ne les utilisez pas
