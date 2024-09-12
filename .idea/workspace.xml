@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="7664c3c3-46d0-4163-be09-5d306ffa1e3a" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/pisci_smart/.editorconfig" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/.env.example" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/.gitattributes" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/app/Http/Controllers/Controller.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/app/Models/User.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/app/Providers/AppServiceProvider.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/artisan" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/bootstrap/app.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/bootstrap/cache/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/bootstrap/providers.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/composer.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/composer.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/config/app.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/config/auth.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/config/cache.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/config/database.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/config/filesystems.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/config/logging.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/config/mail.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/config/queue.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/config/services.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/config/session.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/database/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/database/factories/UserFactory.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/database/migrations/0001_01_01_000000_create_users_table.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/database/migrations/0001_01_01_000001_create_cache_table.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/database/migrations/0001_01_01_000002_create_jobs_table.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/database/seeders/DatabaseSeeder.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/phpunit.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/public/.htaccess" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/public/favicon.ico" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/public/index.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/public/robots.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/resources/css/app.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/resources/js/app.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/resources/js/bootstrap.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/resources/views/welcome.blade.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/routes/console.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/routes/web.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/storage/app/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/storage/app/public/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/storage/framework/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/storage/framework/cache/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/storage/framework/cache/data/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/storage/framework/sessions/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/storage/framework/testing/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/storage/framework/views/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/storage/logs/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/tests/Feature/ExampleTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/tests/TestCase.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/tests/Unit/ExampleTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pisci_smart/vite.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/PisciSmart.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/Unnamed.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/PisciSmart/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/PisciSmart/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/PisciSmart/mvnw" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/PisciSmart/mvnw.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/PisciSmart/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/PisciSmart/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PisciSmart/src/main/java/com/PisciSmart/PisciSmart/PisciSmartApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/PisciSmart/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/PisciSmart/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PisciSmart/src/test/java/com/PisciSmart/PisciSmart/PisciSmartApplicationTests.java" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <excluded-from-favorite>
+      <branch-storage>
+        <map>
+          <entry type="LOCAL">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="main" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </excluded-from-favorite>
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="useMavenConfig" value="true" />
+      </MavenGeneralSettings>
+    </option>
+    <option name="importingSettings">
+      <MavenImportingSettings>
+        <option name="jdkForImporter" value="17" />
+      </MavenImportingSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="2kFOgrngF2CpB5n6PysWeCfnjMT" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/ThinKBook/Desktop/PisciSmart&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.project.maven.importing&quot;,
+    &quot;spring.configuration.checksum&quot;: &quot;23427f75ed510687420ab933e9f04a1b&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.PisciSmart.PisciSmart.Exception" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="PisciSmartApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="PisciSmart" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.PisciSmart.PisciSmart.PisciSmartApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="7664c3c3-46d0-4163-be09-5d306ffa1e3a" name="Changes" comment="" />
+      <created>1722875977697</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1722875977697</updated>
+      <workItem from="1722875981056" duration="4425000" />
+      <workItem from="1722931146619" duration="10569000" />
+      <workItem from="1722945487890" duration="4680000" />
+      <workItem from="1723020534975" duration="859000" />
+      <workItem from="1723021914074" duration="5780000" />
+      <workItem from="1724175147315" duration="135000" />
+      <workItem from="1725523932070" duration="577000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="User">
+          <value>
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="*" />
+                </option>
+              </RecentGroup>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
