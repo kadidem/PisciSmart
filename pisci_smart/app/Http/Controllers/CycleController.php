@@ -125,7 +125,7 @@ class CycleController extends Controller
             'DateDebut' => 'required|date|before_or_equal:today',
             'NumCycle' => 'required|integer|unique:cycles,NumCycle',
             'espece' => 'required|string|max:255',
-             'idBassin' => 'required|exists:bassins,idBassin'
+             //'idBassin' => 'required|exists:bassins,idBassin'
         ],
         [
             'DateDebut.before_or_equal' => 'La date ne peut pas être dans le futur. Veuillez entrer une date valide.',
@@ -278,7 +278,7 @@ class CycleController extends Controller
             'NbrePoisson' => 'required|integer',
             'DateDebut' => 'required|date',
             'espece' => 'required|string|max:255',
-             'idBassin' => 'required|exists:bassins,idBassin'
+             //'idBassin' => 'required|exists:bassins,idBassin'
         ]);
         $cycle = Cycle::findOrFail($id);
 

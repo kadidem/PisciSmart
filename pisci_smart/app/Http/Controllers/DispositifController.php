@@ -10,8 +10,6 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
-
-
 class DispositifController extends Controller
 {
     // Afficher tous les dispositifs
@@ -21,59 +19,49 @@ class DispositifController extends Controller
         return response()->json($dispositif);
     }
 
-
     public function generateQrCode($idDispo)
     {
-        // Ici tu peux récupérer le dispositif à partir de son ID, par exemple :
+        // Récupérer le dispositif à partir de son ID
         $dispositif = Dispositif::find($idDispo);
         if (!$dispositif) {
-           return response()->json(['message' => 'Dispositif non trouvé'], 404);
+            return response()->json(['message' => 'Dispositif non trouvé'], 404);
         }
 
-       // Chemin vers le logo de PisciSmart
-    $logoPath = resource_path('images/logo.png');
+        // Chemin vers le logo de PisciSmart
+        $logoPath = resource_path('images/logo.png');
 
-    // Génération du QR code avec le contenu de l'ID du dispositif et fusion avec le logo
-    $qrCode = QrCode::format('png')
-                    ->size(200) // Taille du QR code
-                    // ->merge($logoPath, 0.6, true) // Ajouter le logo avec une taille ajustée
-                    ->generate($dispositif->numero_serie);
+        // Générer le QR code avec l'ID du dispositif
+        $qrCode = QrCode::format('png')
+                        ->size(200)
+                        ->generate($dispositif->numero_serie);
 
-    // Retourner le QR code comme une image
-
-
-    return response($qrCode)->header('Content-Type', 'image/png');
-
+        // Retourner le QR code comme une image
+        return response($qrCode)->header('Content-Type', 'image/png');
     }
-
-
 
     public function getLocationByDispoId($idDispo)
-{
-    $dispositif = Dispositif::find($idDispo);
+    {
+        $dispositif = Dispositif::find($idDispo);
 
-    if ($dispositif) {
-        $cityResponse = Http::get("https://nominatim.openstreetmap.org/reverse", [
-            'format' => 'json',
-            'lat' => $dispositif->latitude,
-            'lon' => $dispositif->longitude,
-        ]);
+        if ($dispositif) {
+            $cityResponse = Http::get("https://nominatim.openstreetmap.org/reverse", [
+                'format' => 'json',
+                'lat' => $dispositif->latitude,
+                'lon' => $dispositif->longitude,
+            ]);
 
-        $cityName = $cityResponse->json()['address']['city'] ?? 'Ville inconnue';
+            $cityName = $cityResponse->json()['address']['city'] ?? 'Ville inconnue';
 
-        return response()->json([
-            'latitude' => $dispositif->latitude,
-            'longitude' => $dispositif->longitude,
-            'city' => $cityName,
-            'map_url' => "https://www.openstreetmap.org/?mlat={$dispositif->latitude}&mlon={$dispositif->longitude}#map=15/{$dispositif->latitude}/{$dispositif->longitude}",
-        ]);
+            return response()->json([
+                'latitude' => $dispositif->latitude,
+                'longitude' => $dispositif->longitude,
+                'city' => $cityName,
+                'map_url' => "https://www.openstreetmap.org/?mlat={$dispositif->latitude}&mlon={$dispositif->longitude}#map=15/{$dispositif->latitude}/{$dispositif->longitude}",
+            ]);
+        }
+
+        return response()->json(['error' => 'Dispositif non trouvé'], 404);
     }
-
-    return response()->json(['error' => 'Dispositif non trouvé'], 404);
-}
-
-
-
 
     // Afficher un dispositif
     public function getDispositifById($id)
@@ -131,21 +119,16 @@ class DispositifController extends Controller
                 'num' => 'required|string|unique:dispositifs|max:255', // Validation d'unicité
                 'longitude' => 'required|string|max:255',
                 'latitude' => 'required|string|max:255',
-                'idPisciculteur' => 'required|integer|exists:pisciculteurs,idPisciculteur', // Validation de l'existence de l'idPisciculteur
-
             ]);
 
-
-             // Générer un numéro de série unique de 4 caractères (alphanumérique)
+            // Générer un numéro de série unique de 4 caractères (alphanumérique)
             $numeroSerie = $this->generateNumeroSerie();
 
             // Ajouter le numéro de série aux données validées
             $validated['numero_serie'] = $numeroSerie;
 
-
             // Créer un nouveau dispositif
             $newdispositif = Dispositif::create($validated);
-
 
             // Retourner une réponse JSON avec le dispositif créé
             return response()->json([
@@ -154,15 +137,12 @@ class DispositifController extends Controller
             ], 201);
 
         } catch (ValidationException $e) {
-            // Capturer l'exception de validation et retourner les erreurs
             return response()->json(['error' => $e->errors()], 422);
         } catch (\Exception $e) {
-            // Gérer les autres exceptions et loguer l'erreur
             Log::error('Erreur lors de la création du dispositif: ' . $e->getMessage());
             return response()->json(['error' => 'Une erreur est survenue lors de la création du dispositif.'], 500);
         }
     }
-
 
     // Fonction pour générer un numéro de série unique de 4 caractères
     private function generateNumeroSerie()
@@ -175,11 +155,7 @@ class DispositifController extends Controller
         return $numeroSerie;
     }
 
-
-
-
-
-       // Modifier un dispositif existant
+    // Modifier un dispositif existant
     public function update_dispositif(Request $request, $id)
     {
         try {
@@ -195,10 +171,9 @@ class DispositifController extends Controller
 
             // Valider les données de la requête
             $validated = $request->validate([
-                'num' => 'required|string|max:255|unique:dispositifs,num,' . $dispositif->idDispo . ',idDispo', // Utilisation de la clé primaire correcte
+                'num' => 'required|string|max:255|unique:dispositifs,num,' . $dispositif->idDispo . ',idDispo',
                 'longitude' => 'required|string|max:255',
                 'latitude' => 'required|string|max:255',
-                'idPisciculteur' => 'required|integer|exists:pisciculteurs,idPisciculteur', // Validation de l'existence de l'idPisciculteur
             ]);
 
             // Mettre à jour le dispositif avec les nouvelles données validées
@@ -211,118 +186,35 @@ class DispositifController extends Controller
             ], 200);
 
         } catch (ValidationException $e) {
-            // Capturer l'exception de validation et retourner les erreurs
             return response()->json(['error' => 'Erreur de validation: ' . json_encode($e->errors())], 422);
         } catch (\Exception $e) {
-            // Gérer les autres exceptions et loguer l'erreur
             Log::error('Erreur lors de la mise à jour du dispositif: ' . $e->getMessage());
             return response()->json(['error' => 'Une erreur est survenue: ' . $e->getMessage()], 500);
         }
     }
 
+    // Afficher le nombre total de dispositifs
+    public function count_all_dispositifs()
+    {
+        try {
+            // Compter le nombre total de dispositifs
+            $count = Dispositif::count();
 
-    //nbre total de dispositif/pisciculteur
-public function count_dispositifs_by_pisciculteur($idPisciculteur)
-{
-    try {
-        // Vérifier si le pisciculteur existe
-        $pisciculteur = \App\Models\Pisciculteur::find($idPisciculteur);
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'total_dispositifs' => $count
+                ]
+            ], 200);
 
-        if (!$pisciculteur) {
+        } catch (\Exception $e) {
+            Log::error('Erreur lors du comptage des dispositifs: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
-                'message' => 'Pisciculteur non trouvé'
-            ], 404);
+                'message' => 'Une erreur est survenue lors du comptage des dispositifs.'
+            ], 500);
         }
-
-        // Compter le nombre de dispositifs associés au pisciculteur
-        $count = Dispositif::where('idPisciculteur', $idPisciculteur)->count();
-
-        // Retourner une réponse JSON avec le nombre de dispositifs
-        return response()->json([
-            'status' => 'success',
-            'data' => [
-                'idPisciculteur' => $idPisciculteur,
-                'total_dispositifs' => $count
-            ]
-        ], 200);
-
-    } catch (\Exception $e) {
-        // Gérer les exceptions et loguer l'erreur
-        Log::error('Erreur lors du comptage des dispositifs: ' . $e->getMessage());
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Une erreur est survenue lors du comptage des dispositifs.'
-        ], 500);
     }
-}
-
-
-// Afficher les dispositifs d'un pisciculteur
-public function get_dispositifs_by_pisciculteur($idPisciculteur)
-{
-    try {
-        // Vérifier si le pisciculteur existe
-        $pisciculteur = \App\Models\Pisciculteur::find($idPisciculteur);
-
-        if (!$pisciculteur) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Pisciculteur non trouvé'
-            ], 404);
-        }
-
-        // Obtenir les dispositifs associés au pisciculteur
-        $dispositifs = Dispositif::where('idPisciculteur', $idPisciculteur)->get();
-
-        // Retourner une réponse JSON avec les détails des dispositifs
-        return response()->json([
-            'status' => 'success',
-            'data' => [
-                'idPisciculteur' => $idPisciculteur,
-                'dispositifs' => $dispositifs
-            ]
-        ], 200);
-
-    } catch (\Exception $e) {
-        // Gérer les exceptions et loguer l'erreur
-        Log::error('Erreur lors de la récupération des dispositifs: ' . $e->getMessage());
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Une erreur est survenue lors de la récupération des dispositifs.'
-        ], 500);
-    }
-}
-
-   // Afficher le nombre total de tous les dispositifs
-public function count_all_dispositifs()
-{
-    try {
-        // Compter le nombre total de dispositifs
-        $count = Dispositif::count();
-
-        // Retourner une réponse JSON avec le nombre total de dispositifs
-        return response()->json([
-            'status' => 'success',
-            'data' => [
-                'total_dispositifs' => $count
-            ]
-        ], 200);
-
-    } catch (\Exception $e) {
-        // Gérer les exceptions et loguer l'erreur
-        Log::error('Erreur lors du comptage des dispositifs: ' . $e->getMessage());
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Une erreur est survenue lors du comptage des dispositifs.'
-        ], 500);
-    }
-}
-
-
-
-
-
 }
 
 

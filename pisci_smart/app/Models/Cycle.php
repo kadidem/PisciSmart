@@ -9,8 +9,11 @@ use Carbon\Carbon;
 class Cycle extends Model
 {
     use HasFactory;
+
     public $timestamps = false;
-    protected $primaryKey='idCycle';
+    protected $primaryKey = 'idCycle';
+
+    // Les attributs qui peuvent être assignés en masse
     protected $fillable = [
         'AgePoisson',
         'NbrePoisson',
@@ -18,8 +21,10 @@ class Cycle extends Model
         'DateFin',
         'NumCycle',
         'espece',
-        'idBassin'
+        'idBassin',
+        'description' // Ajout de description ici
     ];
+
     // Méthode pour définir la date de fin
     public static function boot()
     {
@@ -30,8 +35,10 @@ class Cycle extends Model
             $cycle->DateFin = Carbon::parse($cycle->DateDebut)->addMonths(6);
         });
     }
-    protected $rules = [
-        'DateDebut' => 'required|date|before_or_equal:today',
-    ];
 
+    // Les règles de validation pour ce modèle
+    protected static $rules = [
+        'DateDebut' => 'required|date|before_or_equal:today',
+        'description' => 'nullable|string|max:255', // Ajout de la validation pour description
+    ];
 }
