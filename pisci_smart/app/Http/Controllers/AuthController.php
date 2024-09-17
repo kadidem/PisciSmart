@@ -44,40 +44,42 @@ class AuthController extends Controller
 
 
     // Connexion
-    public function login(Request $request)
-    {
-        // Valider les données de la requête
-        $request->validate([
-            'telephone' => 'required',
-            'password' => 'required',
-        ]);
+   // Connexion
+public function login(Request $request)
+{
+    // Valider les données de la requête
+    $request->validate([
+        'telephone' => 'required',
+        'password' => 'required',
+    ]);
 
-        // Chercher l'utilisateur dans toutes les tables possibles
-        $user = User::where('telephone', $request->telephone)->first();
+    // Chercher l'utilisateur dans la table `users`
+    $user = User::where('telephone', $request->telephone)->first();
 
-        // Vérifier si l'utilisateur est trouvé
-        if (!$user) {
-            return response()->json(['message' => 'Utilisateur non trouvé'], 404);
-        }
-
-        // Affichez les valeurs du mot de passe haché et du mot de passe de la requête
-        if (!Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'message' => 'Le mot de passe est incorrect.',
-                'mot_de_passe_hache' => $user->password,
-                'mot_de_passe_clair' => $request->password
-            ], 401);
-        }
-
-        // Créer un token d'authentification
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'message' => 'Connexion réussie',
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-        ], 200);
+    // Vérifier si l'utilisateur est trouvé
+    if (!$user) {
+        return response()->json(['message' => 'Utilisateur non trouvé'], 404);
     }
+
+    // Vérifier le mot de passe
+    if (Hash::check($request->password, $user->password)) {
+        return response()->json(['message' => 'Le mot de passe est incorrect.'], 401);
+    }
+
+    // Créer un token d'authentification
+    $token = $user->createToken('auth_token')->plainTextToken;
+
+    return response()->json([
+        'message' => 'Connexion réussie',
+        'access_token' => $token,
+        'token_type' => 'Bearer',
+        'user' => [
+            'telephone' => $user->telephone,
+            'prenom' => $user->prenom,
+            'nom' => $user->nom
+        ]
+    ], 200);
+}
 
 
 
