@@ -17,9 +17,8 @@ return new class extends Migration
             $table->string('nom');
             $table->string('prenom');
             $table->string('telephone')->unique();
-           
+            $table->string('adresse');
             $table->string('password');
-
             $table->timestamps();
             $table->rememberToken();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

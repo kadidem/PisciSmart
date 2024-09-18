@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Pisciculteur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -9,40 +10,40 @@ use Illuminate\Validation\ValidationException;
 class PisciculteurController extends Controller
 {
     //afficher tous les pisciculteurs
-    public function getAllPisciculteur(){
-        $pisciculteur=Pisciculteur::all();
-        return response()->json( $pisciculteur);
+    public function getAllPisciculteur()
+    {
+        $pisciculteur = Pisciculteur::all();
+        return response()->json($pisciculteur);
     }
 
 
     public function getPisciculteurById($id)
-{
-    try {
-        // Rechercher le pisciculteur par ID
-        $pisciculteur = Pisciculteur::find($id);
+    {
+        try {
+            // Rechercher le pisciculteur par ID
+            $pisciculteur = Pisciculteur::find($id);
 
-        // Si le pisciculteur n'existe pas, retourner une erreur
-        if (!$pisciculteur) {
+            // Si le pisciculteur n'existe pas, retourner une erreur
+            if (!$pisciculteur) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Pisciculteur non trouvé'
+                ], 404);
+            }
+
+            // Retourner le pisciculteur trouvé
+            return response()->json([
+                'status' => 'success',
+                'data' => $pisciculteur
+            ], 200);
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Pisciculteur non trouvé'
-            ], 404);
+                'message' => 'Une erreur s/est produite lors de la récupération du pisciculteur.',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        // Retourner le pisciculteur trouvé
-        return response()->json([
-            'status' => 'success',
-            'data' => $pisciculteur
-        ], 200);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Une erreur s/est produite lors de la récupération du pisciculteur.',
-            'error' => $e->getMessage()
-        ], 500);
     }
-}
 
 
 
@@ -55,7 +56,6 @@ class PisciculteurController extends Controller
                 'nom' => 'required|string|max:255',
                 'prenom' => 'required|string|max:255',
                 'telephone' => 'required|unique:pisciculteurs|max:20',
-                'adresse' => 'required|string|max:255',
                 'password' => 'required|string|min:6',
 
             ]);
@@ -68,7 +68,6 @@ class PisciculteurController extends Controller
 
             // Retourner une réponse JSON avec le pisciculteur créé
             return response()->json($newpisciculteur, 201);
-
         } catch (ValidationException $e) {
             // Capturer l'exception de validation
             return response()->json(['error' => $e->errors()], 422);

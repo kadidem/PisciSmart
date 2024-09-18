@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,7 +14,7 @@ class Pisciculteur extends Authenticatable
     use HasFactory;
     use HasApiTokens;
     // Définir les champs que vous pouvez remplir en masse
-    protected $fillable = ['nom', 'prenom', 'adresse', 'telephone', 'password','idDispo','status',];
+    protected $fillable = ['nom', 'prenom', 'telephone', 'password', 'idDispo'];
 
     // Définir la clé primaire
     protected $primaryKey = 'idPisciculteur';
@@ -27,4 +28,3 @@ class Pisciculteur extends Authenticatable
         'remember_token',
     ];
 }
-

@@ -22,15 +22,15 @@ class CycleController extends Controller
         // Préparer les détails des cycles avec leur statut
         $cyclesDetails = $cycles->map(function ($cycle) {
 
-         // Obtenir les ventes liées à chaque cycle
-         $ventes = Vente::where('idCycle', $cycle->idCycle)->get();
+            // Obtenir les ventes liées à chaque cycle
+            $ventes = Vente::where('idCycle', $cycle->idCycle)->get();
 
-         // Calcul du total des poissons vendus
-         $totalVentesQuantite = $ventes->sum('quantite');
+            // Calcul du total des poissons vendus
+            $totalVentesQuantite = $ventes->sum('quantite');
 
-        // Vérifier si la date actuelle est après la date de fin du cycle
-        $dateActuelle = now(); // Obtenir la date actuelle
-        $cycleTermineParDate = $dateActuelle->greaterThanOrEqualTo($cycle->DateFin);
+            // Vérifier si la date actuelle est après la date de fin du cycle
+            $dateActuelle = now(); // Obtenir la date actuelle
+            $cycleTermineParDate = $dateActuelle->greaterThanOrEqualTo($cycle->DateFin);
 
             // Déterminer si le cycle est terminé
             $cycleTermine = $totalVentesQuantite >= $cycle->NbrePoisson || $cycleTermineParDate;;
@@ -54,55 +54,55 @@ class CycleController extends Controller
 
     //Date pour les notifications
 
-//     public function checkCycleEndDate()
-// {
-//     $dateActuelle = Carbon::now();
-//     $joursAvantNotification = 7;
+    //     public function checkCycleEndDate()
+    // {
+    //     $dateActuelle = Carbon::now();
+    //     $joursAvantNotification = 7;
 
-//     // Obtenir les cycles dont la date de fin approche
-//     $cycles = Cycle::where('DateFin', '>=', $dateActuelle)
-//                     ->where('DateFin', '<=', $dateActuelle->addDays($joursAvantNotification))
-//                     ->get();
+    //     // Obtenir les cycles dont la date de fin approche
+    //     $cycles = Cycle::where('DateFin', '>=', $dateActuelle)
+    //                     ->where('DateFin', '<=', $dateActuelle->addDays($joursAvantNotification))
+    //                     ->get();
 
-//     foreach ($cycles as $cycle) {
-//         // Créer une nouvelle notification pour le pisciculteur
-//         PisciculteurNotification::create([
-//             'idPisciculteur' => $cycle->idPisciculteur, // Pisciculteur lié au cycle
-//             'idCycle' => $cycle->idCycle,
-//             'message' => 'La date de fin de votre cycle approche. Numéro du cycle: ' . $cycle->NumCycle,
-//             'actions' => json_encode([
-//                 'prolonger' => '/api/cycles/prolonger/' . $cycle->idCycle,
-//                 'terminer' => '/api/cycles/terminer/' . $cycle->idCycle,
-//             ]),
-//         ]);
+    //     foreach ($cycles as $cycle) {
+    //         // Créer une nouvelle notification pour le pisciculteur
+    //         PisciculteurNotification::create([
+    //             'idPisciculteur' => $cycle->idPisciculteur, // Pisciculteur lié au cycle
+    //             'idCycle' => $cycle->idCycle,
+    //             'message' => 'La date de fin de votre cycle approche. Numéro du cycle: ' . $cycle->NumCycle,
+    //             'actions' => json_encode([
+    //                 'prolonger' => '/api/cycles/prolonger/' . $cycle->idCycle,
+    //                 'terminer' => '/api/cycles/terminer/' . $cycle->idCycle,
+    //             ]),
+    //         ]);
 
-//         // Créer une notification pour chaque employé associé au pisciculteur
-//         foreach ($cycle->pisciculteur->employes as $employe) {
-//             PisciculteurNotification::create([
-//                 'idEmploye' => $employe->idEmploye,
-//                 'idCycle' => $cycle->idCycle,
-//                 'message' => 'La date de fin du cycle de votre pisciculteur approche. Numéro du cycle: ' . $cycle->NumCycle,
-//                 'actions' => json_encode([
-//                     'prolonger' => '/api/cycles/prolonger/' . $cycle->idCycle,
-//                     'terminer' => '/api/cycles/terminer/' . $cycle->idCycle,
-//                 ]),
-//             ]);
-//         }
-//     }
+    //         // Créer une notification pour chaque employé associé au pisciculteur
+    //         foreach ($cycle->pisciculteur->employes as $employe) {
+    //             PisciculteurNotification::create([
+    //                 'idEmploye' => $employe->idEmploye,
+    //                 'idCycle' => $cycle->idCycle,
+    //                 'message' => 'La date de fin du cycle de votre pisciculteur approche. Numéro du cycle: ' . $cycle->NumCycle,
+    //                 'actions' => json_encode([
+    //                     'prolonger' => '/api/cycles/prolonger/' . $cycle->idCycle,
+    //                     'terminer' => '/api/cycles/terminer/' . $cycle->idCycle,
+    //                 ]),
+    //             ]);
+    //         }
+    //     }
 
-//     return response()->json(['message' => 'Notifications envoyées pour les cycles en fin de période.']);
-// }
-// public function getPisciculteurNotifications($idPisciculteur)
-// {
-//     $notifications = PisciculteurNotification::where('idPisciculteur', $idPisciculteur)->get();
-//     return response()->json($notifications);
-// }
+    //     return response()->json(['message' => 'Notifications envoyées pour les cycles en fin de période.']);
+    // }
+    // public function getPisciculteurNotifications($idPisciculteur)
+    // {
+    //     $notifications = PisciculteurNotification::where('idPisciculteur', $idPisciculteur)->get();
+    //     return response()->json($notifications);
+    // }
 
-// public function getEmployeNotifications($idEmploye)
-// {
-//     $notifications = PisciculteurNotification::where('idEmploye', $idEmploye)->get();
-//     return response()->json($notifications);
-// }
+    // public function getEmployeNotifications($idEmploye)
+    // {
+    //     $notifications = PisciculteurNotification::where('idEmploye', $idEmploye)->get();
+    //     return response()->json($notifications);
+    // }
 
 
 
@@ -110,46 +110,48 @@ class CycleController extends Controller
     public function store(Request $request)
     {
 
-    // // Récupérer l'utilisateur connecté (Pisciculteur)
-    // $user = Auth::guard('sanctum')->user();
+        // // Récupérer l'utilisateur connecté (Pisciculteur)
+        // $user = Auth::guard('sanctum')->user();
 
-    // // Vérifier si le compte est désactivé
-    // if ($user->status == 0) {
-    //     return response()->json(['message' => 'Votre compte est désactivé. Vous ne pouvez pas ajouter de cycle.'], 403);
-    // }
-
-
-        $validatedData = $request->validate([
-            'AgePoisson' => 'required|integer',
-            'NbrePoisson' => 'required|integer',
-            'DateDebut' => 'required|date|before_or_equal:today',
-            'NumCycle' => 'required|integer|unique:cycles,NumCycle',
-            'espece' => 'required|string|max:255',
-             //'idBassin' => 'required|exists:bassins,idBassin'
-        ],
-        [
-            'DateDebut.before_or_equal' => 'La date ne peut pas être dans le futur. Veuillez entrer une date valide.',
-        ]
-    );
-
-    $bassin = Bassin::find($request->idBassin);
-
-    // Vérifier si le bassin a été trouvé
-     if (!$bassin) {
-    return response()->json(['message' => 'Bassin non trouvé'], 404);
-     }
+        // // Vérifier si le compte est désactivé
+        // if ($user->status == 0) {
+        //     return response()->json(['message' => 'Votre compte est désactivé. Vous ne pouvez pas ajouter de cycle.'], 403);
+        // }
 
 
-    // Vérifier s'il existe déjà un cycle en cours dans ce bassin
-    $cycleEnCours = Cycle::where('idBassin', $request->idBassin)
-    ->where('DateFin', '>', now()) // Si la date de fin est supérieure à la date actuelle, le cycle est toujours en cours
-    ->first();
+        $validatedData = $request->validate(
+            [
+                'AgePoisson' => 'required|integer',
+                'NbrePoisson' => 'required|integer',
+                'DateDebut' => 'required|date|before_or_equal:today',
+                'NumCycle' => 'required|integer|unique:cycles,NumCycle',
+                'espece' => 'required|string|max:255',
+                'description' => 'required|string|max:255',
+                'idBassin' => 'required|exists:bassins,idBassin'
+            ],
+            [
+                'DateDebut.before_or_equal' => 'La date ne peut pas être dans le futur. Veuillez entrer une date valide.',
+            ]
+        );
 
-    if ($cycleEnCours) {
-    return response()->json([
-        'error' => 'Un cycle est déjà en cours dans ce bassin. Vous devez terminer ce cycle avant d\'en créer un nouveau.'
-    ], 422);
-    }
+        $bassin = Bassin::find($request->idBassin);
+
+        // Vérifier si le bassin a été trouvé
+        if (!$bassin) {
+            return response()->json(['message' => 'Bassin non trouvé'], 404);
+        }
+
+
+        // Vérifier s'il existe déjà un cycle en cours dans ce bassin
+        $cycleEnCours = Cycle::where('idBassin', $request->idBassin)
+            ->where('DateFin', '>', now()) // Si la date de fin est supérieure à la date actuelle, le cycle est toujours en cours
+            ->first();
+
+        if ($cycleEnCours) {
+            return response()->json([
+                'error' => 'Un cycle est déjà en cours dans ce bassin. Vous devez terminer ce cycle avant d\'en créer un nouveau.'
+            ], 422);
+        }
 
 
 
@@ -190,7 +192,7 @@ class CycleController extends Controller
         ], 201);
     }
 
-// les dimensions par poisson Bassin et cycle
+    // les dimensions par poisson Bassin et cycle
     private function getMaxPoissonsForBassin($dimension, $unite)
     {
         $normesM3 = [
@@ -249,7 +251,7 @@ class CycleController extends Controller
         // Calcul du total des poissons vendus
         $totalVentesQuantite = $ventes->sum('quantite');
 
-          // Vérifier si la date actuelle est après la date de fin du cycle
+        // Vérifier si la date actuelle est après la date de fin du cycle
         $dateActuelle = now(); // Obtenir la date actuelle
         $cycleTermineParDate = $dateActuelle->greaterThanOrEqualTo($cycle->DateFin);
 
@@ -278,29 +280,28 @@ class CycleController extends Controller
             'NbrePoisson' => 'required|integer',
             'DateDebut' => 'required|date',
             'espece' => 'required|string|max:255',
-             //'idBassin' => 'required|exists:bassins,idBassin'
+            //'idBassin' => 'required|exists:bassins,idBassin'
         ]);
         $cycle = Cycle::findOrFail($id);
 
-    // Vérifier si le cycle a déjà commencé (DateDebut <= aujourd'hui)
-    if ($cycle->DateDebut <= now()) {
-        {
-            // Retourner un message personnalisé si l'utilisateur essaie de modifier l'âge du poisson ou la date de début
-            return response()->json([
-                'message' => 'Cycle en cours, on ne peut pas modifier l\'âge des poissons ou la date de début.',
-            ], 400);
+        // Vérifier si le cycle a déjà commencé (DateDebut <= aujourd'hui)
+        if ($cycle->DateDebut <= now()) { {
+                // Retourner un message personnalisé si l'utilisateur essaie de modifier l'âge du poisson ou la date de début
+                return response()->json([
+                    'message' => 'Cycle en cours, on ne peut pas modifier l\'âge des poissons ou la date de début.',
+                ], 400);
+            }
+            // Si le cycle a commencé, l'utilisateur ne peut pas modifier 'AgePoisson' ou 'DateDebut'
+            $request->validate([
+                'AgePoisson' => 'prohibited', // Empêcher la modification de l'âge du poisson
+                'DateDebut' => 'prohibited',  // Empêcher la modification de la date de début
+            ]);
         }
-        // Si le cycle a commencé, l'utilisateur ne peut pas modifier 'AgePoisson' ou 'DateDebut'
-        $request->validate([
-            'AgePoisson' => 'prohibited', // Empêcher la modification de l'âge du poisson
-            'DateDebut' => 'prohibited',  // Empêcher la modification de la date de début
-        ]);
-    }
 
 
         // $cycle->update($request->all());
         // Mise à jour du cycle avec les champs validés
-    $cycle->update($validatedData);
+        $cycle->update($validatedData);
         return response()->json(['message' => 'Cycle mis à jour avec succès']);
     }
 
@@ -311,14 +312,14 @@ class CycleController extends Controller
     {
         $cycle = Cycle::findOrFail($id);
         // Vérifier si le cycle est en cours (DateFin est dans le futur ou le cycle n'est pas terminé)
-    if ($cycle->DateFin > now()) {
-        // Retourner un message personnalisé si l'utilisateur essaie de supprimer un cycle en cours
-        return response()->json([
-            'message' => 'Impossible de supprimer un cycle en cours. Veuillez le terminer ou le prolonger.',
-        ], 400);
-    }
+        if ($cycle->DateFin > now()) {
+            // Retourner un message personnalisé si l'utilisateur essaie de supprimer un cycle en cours
+            return response()->json([
+                'message' => 'Impossible de supprimer un cycle en cours. Veuillez le terminer ou le prolonger.',
+            ], 400);
+        }
 
-            // Si le cycle est terminé, on peut le supprimer
+        // Si le cycle est terminé, on peut le supprimer
 
         $cycle->delete();
         return response()->json(['message' => 'Cycle supprimé avec succès']);
