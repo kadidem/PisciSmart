@@ -7,6 +7,8 @@ use App\Models\Cycle;
 use App\Models\Vente;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
 use Carbon\Carbon;
 
 
@@ -198,6 +200,27 @@ class CycleController extends Controller
 
         return 0; // Valeur par défaut si l'unité n'est ni m2 ni m3
     }
+
+       //calcul bénéfice (j'ai ajouté)
+       public function getTotaux()
+       {
+           // Calcul du total des dépenses
+           $totalDepenses = DB::table('depenses')->sum('montant');
+
+           // Calcul du total des ventes
+           $totalVentes = DB::table('ventes')->sum('montant');
+
+           // Calcul du bénéfice
+           $benefice = $totalVentes - $totalDepenses;
+
+           // Retourner les résultats au format JSON
+           return response()->json([
+               'totalDepenses' => $totalDepenses,
+               'totalVentes' => $totalVentes,
+               'benefice' => $benefice
+           ]);
+       }
+
 
 
 

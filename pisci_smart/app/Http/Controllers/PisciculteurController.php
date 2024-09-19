@@ -6,6 +6,7 @@ use App\Models\Pisciculteur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 
 class PisciculteurController extends Controller
 {
@@ -57,11 +58,16 @@ class PisciculteurController extends Controller
                 'prenom' => 'required|string|max:255',
                 'telephone' => 'required|unique:pisciculteurs|max:20',
                 'password' => 'required|string|min:6',
-
+                'active' => 'boolean' // Ajouter la validation pour 'active'
             ]);
 
             // Ajouter le mot de passe haché
             $validated['password'] = Hash::make($validated['password']);
+
+            // Définir une valeur par défaut pour 'active' si elle n'est pas fournie
+            if (!isset($validated['active'])) {
+                $validated['active'] = 1; // ou 0, selon ce que tu veux comme valeur par défaut
+            }
 
             // Créer un nouveau pisciculteur
             $newpisciculteur = Pisciculteur::create($validated);
@@ -72,10 +78,12 @@ class PisciculteurController extends Controller
             // Capturer l'exception de validation
             return response()->json(['error' => $e->errors()], 422);
         } catch (\Exception $e) {
-            // Gérer les autres exceptions
+            // Enregistrer l'erreur dans les logs et retourner une réponse JSON
+            Log::error($e->getMessage());
             return response()->json(['error' => 'Une erreur est survenue'], 500);
         }
     }
+
 
 
 
