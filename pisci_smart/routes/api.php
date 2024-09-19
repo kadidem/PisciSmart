@@ -166,9 +166,6 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
 
 
-
-
-
 // statistiques (pisciculteurs,employe, visiteurs)
 Route::get('/statistiques-utilisateurs', [StatistiquesController::class, 'getStatistiquesUtilisateurs']);
 //details par utilisateurs
@@ -184,3 +181,6 @@ Route::post('/admin/activer-compte/{id}/{type}', [AdminController::class, 'activ
 Route::get('/notifications/pisciculteur/{idPisciculteur}', [CycleController::class, 'getPisciculteurNotifications']);
 Route::get('/notifications/employe/{idEmploye}', [CycleController::class, 'getEmployeNotifications']);
 Route::post('/check-cycles', [CycleController::class, 'checkCycleEndDate']);
+
+// Route API pour calculer les totaux des ventes, dépenses et bénéfice
+Route::get('/totaux', [CycleController::class, 'getTotaux']);
