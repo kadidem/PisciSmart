@@ -53,59 +53,20 @@ class CycleController extends Controller
         return response()->json($cyclesDetails);
     }
 
-
-    //Date pour les notifications
-
-    //     public function checkCycleEndDate()
-    // {
-    //     $dateActuelle = Carbon::now();
-    //     $joursAvantNotification = 7;
-
-    //     // Obtenir les cycles dont la date de fin approche
-    //     $cycles = Cycle::where('DateFin', '>=', $dateActuelle)
-    //                     ->where('DateFin', '<=', $dateActuelle->addDays($joursAvantNotification))
-    //                     ->get();
-
-    //     foreach ($cycles as $cycle) {
-    //         // Créer une nouvelle notification pour le pisciculteur
-    //         PisciculteurNotification::create([
-    //             'idPisciculteur' => $cycle->idPisciculteur, // Pisciculteur lié au cycle
-    //             'idCycle' => $cycle->idCycle,
-    //             'message' => 'La date de fin de votre cycle approche. Numéro du cycle: ' . $cycle->NumCycle,
-    //             'actions' => json_encode([
-    //                 'prolonger' => '/api/cycles/prolonger/' . $cycle->idCycle,
-    //                 'terminer' => '/api/cycles/terminer/' . $cycle->idCycle,
-    //             ]),
-    //         ]);
-
-    //         // Créer une notification pour chaque employé associé au pisciculteur
-    //         foreach ($cycle->pisciculteur->employes as $employe) {
-    //             PisciculteurNotification::create([
-    //                 'idEmploye' => $employe->idEmploye,
-    //                 'idCycle' => $cycle->idCycle,
-    //                 'message' => 'La date de fin du cycle de votre pisciculteur approche. Numéro du cycle: ' . $cycle->NumCycle,
-    //                 'actions' => json_encode([
-    //                     'prolonger' => '/api/cycles/prolonger/' . $cycle->idCycle,
-    //                     'terminer' => '/api/cycles/terminer/' . $cycle->idCycle,
-    //                 ]),
-    //             ]);
-    //         }
-    //     }
-
-    //     return response()->json(['message' => 'Notifications envoyées pour les cycles en fin de période.']);
-    // }
-    // public function getPisciculteurNotifications($idPisciculteur)
-    // {
-    //     $notifications = PisciculteurNotification::where('idPisciculteur', $idPisciculteur)->get();
-    //     return response()->json($notifications);
-    // }
-
-    // public function getEmployeNotifications($idEmploye)
-    // {
-    //     $notifications = PisciculteurNotification::where('idEmploye', $idEmploye)->get();
-    //     return response()->json($notifications);
-    // }
-
+    public function getCyclesByBassin($idBassin)
+    {
+        // Vérifier si le bassin existe
+        $bassin = Bassin::find($idBassin);
+        if (!$bassin) {
+            return response()->json(['message' => 'Bassin non trouvé'], 404);
+        }
+    
+        // Récupérer les cycles associés au bassin
+        $cycles = Cycle::where('idBassin', $idBassin)->get();
+    
+        // Retourner les cycles sous forme de JSON
+        return response()->json($cycles);
+    }
 
 
 
@@ -290,7 +251,7 @@ class CycleController extends Controller
             'DateFin' => $cycle->DateFin,
             'NumCycle' => $cycle->NumCycle,
             'espece' => $cycle->espece,
-            'Statut_Cycle' => $cycleTermine ? 'Terminé' : 'En cours',
+            '   ' => $cycleTermine ? 'Terminé' : 'En cours',
         ]);
     }
 

@@ -84,7 +84,27 @@ class VenteController extends Controller
     {
         //
     }
-
+    public function getVentesByCycle($idCycle)
+    {
+        // Vérifier si le cycle existe
+        $cycle = Cycle::find($idCycle);
+    
+        if (!$cycle) {
+            return response()->json(['message' => 'Cycle non trouvé'], 404);
+        }
+    
+        // Récupérer toutes les ventes liées à ce cycle
+        $ventes = Vente::where('idCycle', $idCycle)->get();
+    
+        // Vérifier si des ventes existent pour ce cycle
+        if ($ventes->isEmpty()) {
+            return response()->json(['message' => 'Aucune vente trouvée pour ce cycle'], 404);
+        }
+    
+        // Retourner la liste des ventes
+        return response()->json($ventes);
+    }
+    
     /**
      * Update the specified resource in storage.
      */
