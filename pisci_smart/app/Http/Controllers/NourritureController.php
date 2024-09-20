@@ -45,7 +45,7 @@ class NourritureController extends Controller
     {
         $validated = $request->validate([
             'nom' => 'required|string|max:255',
-            'quantite' => 'required|integer',
+            'quantite' => 'required|string',
             'date' => 'required|date',
             'heure' => 'required|date_format:H:i:s',
             'idCycle' => 'required|exists:cycles,idCycle'
@@ -85,7 +85,7 @@ class NourritureController extends Controller
     {
         $validated = $request->validate([
             'nom' => 'required|string|max:255',
-            'quantite' => 'required|integer',
+            'quantite' => 'required|string',
             'date' => 'required|date',
             'heure' => 'required|date_format:H:i:s',
         ]);
