@@ -67,8 +67,24 @@ class CycleController extends Controller
         // Retourner les cycles sous forme de JSON
         return response()->json($cycles);
     }
+public function getTotalVentesByCycle($idCycle)
+{
+    $cycle = Cycle::with('ventes')->find($idCycle);
+
+    if (!$cycle) {
+        return response()->json(['message' => 'Cycle non trouvé'], 404);
+    }
+
+    $totalVentes = Vente::where('idCycle', $idCycle)->sum('montant');
 
 
+    return response()->json([
+        'idCycle' => $cycle->idCycle,
+        'totalVentes' => $totalVentes
+    ]);
+}
+
+     
 
     public function store(Request $request)
     {
@@ -202,25 +218,33 @@ class CycleController extends Controller
     }
 
        //calcul bénéfice (j'ai ajouté)
-       public function getTotaux()
+       public function getBeneficeByCycle($idCycle)
        {
-           // Calcul du total des dépenses
-           $totalDepenses = DB::table('depenses')->sum('montant');
-
-           // Calcul du total des ventes
-           $totalVentes = DB::table('ventes')->sum('montant');
-
-           // Calcul du bénéfice
+           // Vérifier si le cycle existe
+           $cycle = Cycle::find($idCycle);
+       
+           if (!$cycle) {
+               return response()->json(['message' => 'Cycle non trouvé'], 404);
+           }
+       
+           // Récupérer le total des ventes pour ce cycle
+           $totalVentes = Vente::where('idCycle', $idCycle)->sum('montant');
+       
+           // Récupérer le total des dépenses pour ce cycle
+           $totalDepenses = DB::table('depenses')->where('idCycle', $idCycle)->sum('montant');
+       
+           // Calcul du bénéfice (ventes - dépenses)
            $benefice = $totalVentes - $totalDepenses;
-
-           // Retourner les résultats au format JSON
+       
+           // Retourner les résultats sous forme de JSON
            return response()->json([
-               'totalDepenses' => $totalDepenses,
+               'idCycle' => $cycle->idCycle,
                'totalVentes' => $totalVentes,
+               'totalDepenses' => $totalDepenses,
                'benefice' => $benefice
            ]);
        }
-
+       
 
 
 

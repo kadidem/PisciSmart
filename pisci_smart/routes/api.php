@@ -110,7 +110,7 @@ Route::delete('/bassin/{id}', [BassinController::class, 'delete_Bassin']);
 // });
 Route::get('/cycles/{idCycle}/ventes', [VenteController::class, 'getVentesByCycle']);
 Route::get('/cycles/{idCycle}/depenses', [DepenseController::class, 'getDepensesByCycle']);
-    
+
 Route::apiResource('depenses', DepenseController::class);
 Route::apiResource('ventes', VenteController::class);
 Route::apiResource('pertes', PerteController::class);
@@ -187,5 +187,5 @@ Route::get('/notifications/pisciculteur/{idPisciculteur}', [CycleController::cla
 Route::get('/notifications/employe/{idEmploye}', [CycleController::class, 'getEmployeNotifications']);
 Route::post('/check-cycles', [CycleController::class, 'checkCycleEndDate']);
 
-// Route API pour calculer les totaux des ventes, dépenses et bénéfice
-Route::get('/totaux', [CycleController::class, 'getTotaux']);
+Route::get('/cycles/{idCycle}/benefice', [CycleController::class, 'getBeneficeByCycle']);
+
