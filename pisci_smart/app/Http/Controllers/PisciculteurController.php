@@ -10,13 +10,12 @@ use Illuminate\Support\Facades\Log;
 
 class PisciculteurController extends Controller
 {
-    //afficher tous les pisciculteurs
+    // Afficher tous les pisciculteurs
     public function getAllPisciculteur()
     {
         $pisciculteur = Pisciculteur::all();
         return response()->json($pisciculteur);
     }
-
 
     public function getPisciculteurById($id)
     {
@@ -40,15 +39,13 @@ class PisciculteurController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Une erreur s/est produite lors de la récupération du pisciculteur.',
+                'message' => 'Une erreur s\'est produite lors de la récupération du pisciculteur.',
                 'error' => $e->getMessage()
             ], 500);
         }
     }
 
-
-
-    //creer un nouveau pisciculteur
+    // Créer un nouveau pisciculteur
     public function create_pisciculteur(Request $request)
     {
         try {
@@ -58,15 +55,17 @@ class PisciculteurController extends Controller
                 'prenom' => 'required|string|max:255',
                 'telephone' => 'required|unique:pisciculteurs|max:20',
                 'password' => 'required|string|min:6',
-                'active' => 'boolean' // Ajouter la validation pour 'active'
+                'user_id' => 'required|exists:users,id',  // Valider l'ID de l'utilisateur
+                'idDispo' => 'required|exists:dispositifs,idDispo', // Valider l'ID du dispositif
+                'active' => 'boolean'  // Validation pour 'active'
             ]);
 
-            // Ajouter le mot de passe haché
+            // Hacher le mot de passe
             $validated['password'] = Hash::make($validated['password']);
 
             // Définir une valeur par défaut pour 'active' si elle n'est pas fournie
             if (!isset($validated['active'])) {
-                $validated['active'] = 1; // ou 0, selon ce que tu veux comme valeur par défaut
+                $validated['active'] = 1;
             }
 
             // Créer un nouveau pisciculteur
@@ -75,19 +74,14 @@ class PisciculteurController extends Controller
             // Retourner une réponse JSON avec le pisciculteur créé
             return response()->json($newpisciculteur, 201);
         } catch (ValidationException $e) {
-            // Capturer l'exception de validation
             return response()->json(['error' => $e->errors()], 422);
         } catch (\Exception $e) {
-            // Enregistrer l'erreur dans les logs et retourner une réponse JSON
             Log::error($e->getMessage());
             return response()->json(['error' => 'Une erreur est survenue'], 500);
         }
     }
 
-
-
-
-    //supprimer un pisciculteur
+    // Supprimer un pisciculteur
     public function delete_pisciculteur($id)
     {
         $pisciculteur = Pisciculteur::find($id);
@@ -100,14 +94,14 @@ class PisciculteurController extends Controller
             ];
         } else {
             $res = [
-                "message" => "Pisciculteur non trouvée",
+                "message" => "Pisciculteur non trouvé",
                 "status" => 404,
             ];
         }
         return response()->json($res);
     }
 
-    //modifier pisciculteur
+    // Modifier un pisciculteur
     public function update_pisciculteur(Request $request, $id)
     {
         try {
@@ -116,7 +110,8 @@ class PisciculteurController extends Controller
                 'nom' => 'required|string|max:255',
                 'prenom' => 'required|string|max:255',
                 'telephone' => 'required|string|max:255|unique:pisciculteurs,telephone,' . $id . ',idPisciculteur',
-                'adresse' => 'required|string|max:255',
+                'user_id' => 'required|exists:users,id',  // Valider l'ID de l'utilisateur
+                'idDispo' => 'required|exists:dispositifs,idDispo' // Valider l'ID du dispositif
             ]);
 
             // Trouver le pisciculteur par son ID
@@ -138,14 +133,12 @@ class PisciculteurController extends Controller
                 ];
             }
         } catch (ValidationException $e) {
-            // Capturer l'exception de validation et retourner un message d'erreur
             $res = [
                 "message" => "Erreur de validation",
                 "status" => 422,
                 "errors" => $e->errors(),
             ];
         } catch (\Exception $e) {
-            // Gérer les autres exceptions
             $res = [
                 "message" => "Une erreur est survenue",
                 "status" => 500,
@@ -155,3 +148,4 @@ class PisciculteurController extends Controller
         return response()->json($res);
     }
 }
+
