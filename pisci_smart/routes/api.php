@@ -110,6 +110,8 @@ Route::apiResource('cycles', CycleController::class);
 // });
 Route::get('/cycles/{idCycle}/ventes', [VenteController::class, 'getVentesByCycle']);
 Route::get('/cycles/{idCycle}/depenses', [DepenseController::class, 'getDepensesByCycle']);
+Route::get('/cycles/{idCycle}/nourritures', [NourritureController::class, 'getNourrituresByCycle']);
+
 
 Route::apiResource('depenses', DepenseController::class);
 Route::apiResource('ventes', VenteController::class);
