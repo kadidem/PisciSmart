@@ -61,11 +61,11 @@ Route::delete('/employe/{id}', [EmployeController::class, 'delete_employe']);
 Route::get('/employes/total-par-pisciculteur', [EmployeController::class, 'getTotalEmployesByPisciculteur']);
 
 //nourriture
-Route::get('/nourriture', [NourritureController::class, 'get_all_nourriture']);
-Route::get('/nourriture/{id}', [NourritureController::class, 'getNourritureById']);
-Route::post('/nourriture', [NourritureController::class, 'create_nourriture']);
-Route::put('/nourriture/{id}', [NourritureController::class, 'update_nourriture']);
-Route::delete('/nourriture/{id}', [NourritureController::class, 'delete_nourriture']);
+Route::get('/nourritures', [NourritureController::class, 'get_all_nourriture']);
+Route::get('/nourritures/{id}', [NourritureController::class, 'getNourritureById']);
+Route::post('/nourritures', [NourritureController::class, 'create_nourriture']);
+Route::put('/nourritures/{id}', [NourritureController::class, 'update_nourriture']);
+Route::delete('/nourritures/{id}', [NourritureController::class, 'delete_nourriture']);
 
 
 //visiteur
@@ -104,9 +104,9 @@ Route::delete('/bassin/{id}', [BassinController::class, 'delete_Bassin']);
 
 //cycle,vente,depense,perte
 // Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/bassins/{idBassin}/cycles', [CycleController::class, 'getCyclesByBassin']);
+Route::get('/bassins/{idBassin}/cycles', [CycleController::class, 'getCyclesByBassin']);
 
-    Route::apiResource('cycles', CycleController::class);
+Route::apiResource('cycles', CycleController::class);
 // });
 Route::get('/cycles/{idCycle}/ventes', [VenteController::class, 'getVentesByCycle']);
 Route::get('/cycles/{idCycle}/depenses', [DepenseController::class, 'getDepensesByCycle']);
@@ -123,7 +123,7 @@ Route::get('/type-demandes', [TypeDemandeController::class, 'index']); // Récup
 
 // Routes pour les commentaires
 Route::get('/commentaires', [CommentaireController::class, 'index']);
-Route::get('/commentaires/{idCommentaire}', [CommentaireController::class,'show']);
+Route::get('/commentaires/{idCommentaire}', [CommentaireController::class, 'show']);
 Route::post('/commentaires', [CommentaireController::class, 'store']);
 Route::put('/commentaires/{idCommentaire}', [CommentaireController::class, 'update']);
 Route::delete('/commentaires/{idCommentaire}', [CommentaireController::class, 'destroy']);
