@@ -5,11 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Bassin;
 use App\Models\Cycle;
 use App\Models\Vente;
+use App\Models\Depense;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
+
 
 
 use App\Models\PisciculteurNotification;
@@ -37,6 +41,10 @@ class CycleController extends Controller
             // Déterminer si le cycle est terminé
             $cycleTermine = $totalVentesQuantite >= $cycle->NbrePoisson || $cycleTermineParDate;;
 
+
+            // Calculer les poissons restants
+            $poissonsRestants = $cycle->NbrePoisson - $cycle->poissons_morts - $totalVentesQuantite;
+
             return [
                 'idCycle' => $cycle->idCycle,
                 'AgePoisson' => $cycle->AgePoisson,
@@ -45,6 +53,8 @@ class CycleController extends Controller
                 'DateFin' => $cycle->DateFin,
                 'NumCycle' => $cycle->NumCycle,
                 'espece' => $cycle->espece,
+                'poissons_morts' => $cycle->poissons_morts,
+                'poissons_restants' => $poissonsRestants,
                 'statut_Cycle' => $cycleTermine ? 'Terminé' : 'En cours',
             ];
         });
@@ -60,10 +70,10 @@ class CycleController extends Controller
         if (!$bassin) {
             return response()->json(['message' => 'Bassin non trouvé'], 404);
         }
-    
+
         // Récupérer les cycles associés au bassin
         $cycles = Cycle::where('idBassin', $idBassin)->get();
-    
+
         // Retourner les cycles sous forme de JSON
         return response()->json($cycles);
     }
@@ -201,27 +211,41 @@ class CycleController extends Controller
         return 0; // Valeur par défaut si l'unité n'est ni m2 ni m3
     }
 
-       //calcul bénéfice (j'ai ajouté)
-       public function getTotaux()
-       {
-           // Calcul du total des dépenses
-           $totalDepenses = DB::table('depenses')->sum('montant');
-
-           // Calcul du total des ventes
-           $totalVentes = DB::table('ventes')->sum('montant');
-
-           // Calcul du bénéfice
-           $benefice = $totalVentes - $totalDepenses;
-
-           // Retourner les résultats au format JSON
-           return response()->json([
-               'totalDepenses' => $totalDepenses,
-               'totalVentes' => $totalVentes,
-               'benefice' => $benefice
-           ]);
-       }
 
 
+    public function getTotalDepenses($id)
+    {
+        // Assure-toi que le modèle Depense a une relation avec Cycle
+        $totalDepenses = Depense::where('idCycle', $id)->sum('montant'); // Remplace 'cycle_id' par le nom de ta colonne de référence au cycle
+
+        return response()->json(['total_depenses' => $totalDepenses], 200);
+    }
+
+
+    public function getTotalVentes($id)
+    {
+        // Assure-toi que le modèle Depense a une relation avec Cycle
+        $totalVentes = Vente::where('idCycle', $id)->sum('montant'); // Remplace 'cycle_id' par le nom de ta colonne de référence au cycle
+
+        return response()->json(['total_ventes' => $totalVentes], 200);
+    }
+
+    public function getBenefice($id)
+    {
+        // Calculer le total des ventes pour ce cycle
+        $totalVentes = Vente::where('idCycle', $id)->sum('montant');
+
+        // Calculer le total des dépenses pour ce cycle
+        $totalDepenses = Depense::where('idCycle', $id)->sum('montant');
+
+        // Calculer le bénéfice en soustrayant les dépenses des ventes
+        $benefice = $totalVentes - $totalDepenses;
+
+        // Retourner uniquement le bénéfice sous forme de JSON
+        return response()->json([
+            'benefice' => $benefice
+        ]);
+    }
 
 
     public function show($id)
@@ -240,7 +264,10 @@ class CycleController extends Controller
         $cycleTermineParDate = $dateActuelle->greaterThanOrEqualTo($cycle->DateFin);
 
         // Déterminer si le cycle est terminé
-        $cycleTermine = $totalVentesQuantite >= $cycle->NbrePoisson  || $cycleTermineParDate;;
+        $cycleTermine = $totalVentesQuantite >= $cycle->NbrePoisson  || $cycleTermineParDate;
+
+        // Calculer les poissons restants
+        $poissonsRestants = $cycle->NbrePoisson - $cycle->poissons_morts - $totalVentesQuantite;
 
         // Retourner les informations du cycle avec le statut
         return response()->json([
@@ -251,6 +278,8 @@ class CycleController extends Controller
             'DateFin' => $cycle->DateFin,
             'NumCycle' => $cycle->NumCycle,
             'espece' => $cycle->espece,
+            'poissons_morts' => $cycle->poissons_morts,
+            'poissons_restants' => $poissonsRestants,
             '   ' => $cycleTermine ? 'Terminé' : 'En cours',
         ]);
     }
@@ -307,5 +336,59 @@ class CycleController extends Controller
 
         $cycle->delete();
         return response()->json(['message' => 'Cycle supprimé avec succès']);
+    }
+
+    public function addPoissonsMorts(Request $request, $idCycle)
+    {
+        // Validation des données entrantes
+        $validator = Validator::make($request->all(), [
+            'nombre_morts' => 'nullable|integer|min:0',
+        ], [
+            'nombre_morts.integer' => 'Le nombre de poissons morts doit être un entier.',
+            'nombre_morts.min' => 'Le nombre de poissons morts ne peut pas être négatif.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Récupérer le cycle
+        $cycle = Cycle::find($idCycle);
+
+        if (!$cycle) {
+            return response()->json(['message' => 'Cycle non trouvé'], 404);
+        }
+
+        // Initialiser poissons_morts à 0 si null
+        $cycle->poissons_morts = $cycle->poissons_morts ?? 0;
+
+        // Récupérer le nombre de poissons morts ajouté
+        $nombreMorts = $request->input('nombre_morts');
+
+        if ($nombreMorts === null) {
+            return response()->json(['message' => 'Aucun nombre de poissons morts fourni.'], 400);
+        }
+
+        // Vérifier que l'ajout de poissons morts ne dépasse pas le nombre initial
+        if (($cycle->poissons_morts + $nombreMorts) > $cycle->NbrePoisson) {
+            return response()->json([
+                'error' => 'Le nombre total de poissons morts dépasse le nombre initial de poissons dans le cycle.',
+            ], 422);
+        }
+
+        // Mettre à jour le nombre de poissons morts
+        $cycle->poissons_morts += $nombreMorts;
+
+        // Enregistrer les modifications
+        $cycle->save();
+
+        // Calculer les poissons restants
+        $poissonsRestants = $cycle->NbrePoisson - $cycle->poissons_morts;
+
+        return response()->json([
+            'message' => 'Nombre de poissons morts mis à jour avec succès.',
+            'poissons_morts' => $cycle->poissons_morts,
+            'poissons_restants' => $poissonsRestants,
+        ], 200);
     }
 }

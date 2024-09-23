@@ -188,4 +188,11 @@ Route::get('/notifications/employe/{idEmploye}', [CycleController::class, 'getEm
 Route::post('/check-cycles', [CycleController::class, 'checkCycleEndDate']);
 
 // Route API pour calculer les totaux des ventes, dépenses et bénéfice
-Route::get('/totaux', [CycleController::class, 'getTotaux']);
+
+
+Route::get('/total-depenses/{id}', [CycleController::class, 'getTotalDepenses']);
+Route::get('/total-ventes/{id}', [CycleController::class, 'getTotalVentes']);
+Route::get('/cycle/{id}/benefice', [CycleController::class, 'getBenefice']);
+
+//poisson mort
+Route::post('/cycles/{id}/poissons-morts', [CycleController::class, 'addPoissonsMorts']);

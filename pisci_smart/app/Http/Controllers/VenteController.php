@@ -37,36 +37,34 @@ class VenteController extends Controller
             'quantite' => 'required|numeric|min:1',
             'date' => 'required|date|before_or_equal:today',
             'idCycle' => 'required|exists:cycles,idCycle'
-
         ],
         [
             'date.before_or_equal' => 'La date ne peut pas être dans le futur. Veuillez entrer une date valide.',
-        ]
-    );
-     // Obtenir le cycle lié
-     $cycle = Cycle::find($request->idCycle);
+        ]);
 
-     // Calculer la quantité totale de poissons vendus dans ce cycle
-     $totalVendus = Vente::where('idCycle', $request->idCycle)->sum('quantite');
+        // Obtenir le cycle lié
+        $cycle = Cycle::find($request->idCycle);
 
-    // Vérifier si tous les poissons ont été vendus
-    if ($totalVendus >= $cycle->NbrePoisson) {
-        // Tous les poissons ont été vendus, marquer le cycle comme terminé
-        $cycle->statut = 'terminé';
-        $cycle->save();
+        // Calculer la quantité totale de poissons vendus dans ce cycle
+        $totalVendus = Vente::where('idCycle', $request->idCycle)->sum('quantite');
 
-        // Générer un rapport de fin de cycle (optionnel)
-        $rapportController = new RapportController();
-        return $rapportController->generateReport($cycle->idCycle);
-    }
+        // Vérifier si tous les poissons ont été vendus
+        if ($totalVendus >= $cycle->NbrePoisson) {
+            // Tous les poissons ont été vendus, marquer le cycle comme terminé
+            $cycle->statut = 'terminé';
+            $cycle->save();
 
+            // Générer un rapport de fin de cycle (optionnel)
+            $rapportController = new RapportController();
+            return $rapportController->generateReport($cycle->idCycle);
+        }
 
-
-        // Créer un cycle
+        // Créer une vente
         $vente = Vente::create($request->all());
 
         return response()->json(['message' => 'Vente créé avec succès', 'data' => $vente], 201);
     }
+
     /**
      * Display the specified resource.
      */
@@ -74,7 +72,29 @@ class VenteController extends Controller
     {
         $vente = Vente::findOrFail($id);
         return response()->json($vente);
+    }
 
+
+
+    public function getVentesByCycle($idCycle)
+    {
+        // Vérifier si le cycle existe
+        $cycle = Cycle::find($idCycle);
+
+        if (!$cycle) {
+            return response()->json(['message' => 'Cycle non trouvé'], 404);
+        }
+
+        // Récupérer toutes les ventes liées à ce cycle
+        $ventes = Vente::where('idCycle', $idCycle)->get();
+
+        // Vérifier si des ventes existent pour ce cycle
+        if ($ventes->isEmpty()) {
+            return response()->json(['message' => 'Aucune vente trouvée pour ce cycle'], 404);
+        }
+
+        // Retourner la liste des ventes
+        return response()->json($ventes);
     }
 
     /**
@@ -84,27 +104,7 @@ class VenteController extends Controller
     {
         //
     }
-    public function getVentesByCycle($idCycle)
-    {
-        // Vérifier si le cycle existe
-        $cycle = Cycle::find($idCycle);
-    
-        if (!$cycle) {
-            return response()->json(['message' => 'Cycle non trouvé'], 404);
-        }
-    
-        // Récupérer toutes les ventes liées à ce cycle
-        $ventes = Vente::where('idCycle', $idCycle)->get();
-    
-        // Vérifier si des ventes existent pour ce cycle
-        if ($ventes->isEmpty()) {
-            return response()->json(['message' => 'Aucune vente trouvée pour ce cycle'], 404);
-        }
-    
-        // Retourner la liste des ventes
-        return response()->json($ventes);
-    }
-    
+
     /**
      * Update the specified resource in storage.
      */
@@ -116,17 +116,14 @@ class VenteController extends Controller
             'quantite' => 'required|numeric|min:1',
             'date' => 'required|date|before_or_equal:today',
             'idCycle' => 'required|exists:cycles,idCycle'
-
         ],
         [
             'date.before_or_equal' => 'La date ne peut pas être dans le futur. Veuillez entrer une date valide.',
-        ]
-    );
-
+        ]);
 
         $vente = Vente::findOrFail($id);
-
         $vente->update($request->all());
+
         return response()->json(['message' => 'Vente mis à jour avec succès', 'data' => $vente], 201);
     }
 
@@ -136,9 +133,9 @@ class VenteController extends Controller
     public function destroy($id)
     {
         $vente = Vente::findOrFail($id);
-
         $vente->delete();
+
         return response()->json(['message' => 'Vente supprimé avec succès']);
     }
-
 }
+
