@@ -1,9 +1,11 @@
 <?php
 
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\validator; // validator laravel
 use Illuminate\Validation\ValidationException;
 use App\Models\Pisciculteur;
 use App\Models\Visiteur;
@@ -17,7 +19,12 @@ class AuthController extends Controller
     // Inscription
     public function register(Request $request)
     {
+
+
+
+        // error_log($request->nom);
         // Valider les données de la requête
+
         $request->validate([
             'nom' => 'required|string',
             'prenom' => 'required|string',
@@ -32,11 +39,13 @@ class AuthController extends Controller
             'prenom' => $request->prenom,
             'telephone' => $request->telephone,
             //'adresse' => $request->adresse,
+            //'adresse' => $request->adresse,
             'password' => Hash::make($request->password),
         ];
 
         // Créer l'utilisateur dans la table `pisciculteurs` (par défaut)
         $user = User::create($data);
+
 
         return response()->json(['message' => 'Utilisateur créé avec succès'], 201);
     }

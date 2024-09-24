@@ -128,6 +128,7 @@ Route::get('/type-demandes', [TypeDemandeController::class, 'index']); // Récup
 // Routes pour les commentaires
 Route::get('/commentaires', [CommentaireController::class, 'index']);
 Route::get('/commentaires/{idCommentaire}', [CommentaireController::class, 'show']);
+Route::get('/commentaires/{idCommentaire}', [CommentaireController::class, 'show']);
 Route::post('/commentaires', [CommentaireController::class, 'store']);
 Route::put('/commentaires/{idCommentaire}', [CommentaireController::class, 'update']);
 Route::delete('/commentaires/{idCommentaire}', [CommentaireController::class, 'destroy']);
