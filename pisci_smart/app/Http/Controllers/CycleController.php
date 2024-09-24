@@ -42,7 +42,7 @@ class CycleController extends Controller
                 'AgePoisson' => $cycle->AgePoisson,
                 'NbrePoisson' => $cycle->NbrePoisson,
                 'DateDebut' => $cycle->DateDebut,
-                'DateFin' => $cycle->DateFin,
+                'DateFin' => $cycle->DateFin,   
                 'NumCycle' => $cycle->NumCycle,
                 'espece' => $cycle->espece,
                 'statut_Cycle' => $cycleTermine ? 'Terminé' : 'En cours',
@@ -280,38 +280,39 @@ public function getTotalVentesByCycle($idCycle)
     }
 
 
-
     public function update(Request $request, $id)
     {
-        $validatedData =  $request->validate([
-            'AgePoisson' => 'required|integer',
-            'NbrePoisson' => 'required|integer',
-            'DateDebut' => 'required|date',
-            'espece' => 'required|string|max:255',
-            //'idBassin' => 'required|exists:bassins,idBassin'
-        ]);
+        // Trouver le cycle correspondant à l'ID
         $cycle = Cycle::findOrFail($id);
-
+    
         // Vérifier si le cycle a déjà commencé (DateDebut <= aujourd'hui)
-        if ($cycle->DateDebut <= now()) { {
-                // Retourner un message personnalisé si l'utilisateur essaie de modifier l'âge du poisson ou la date de début
-                return response()->json([
-                    'message' => 'Cycle en cours, on ne peut pas modifier l\'âge des poissons ou la date de début.',
-                ], 400);
-            }
-            // Si le cycle a commencé, l'utilisateur ne peut pas modifier 'AgePoisson' ou 'DateDebut'
-            $request->validate([
-                'AgePoisson' => 'prohibited', // Empêcher la modification de l'âge du poisson
-                'DateDebut' => 'prohibited',  // Empêcher la modification de la date de début
-            ]);
+        if ($cycle->DateDebut <= now()) {
+            // Si le cycle a commencé, supprimer 'AgePoisson' et 'DateDebut' de la requête
+            $request->request->remove('AgePoisson');
+            $request->request->remove('DateDebut');
         }
-
-
-        // $cycle->update($request->all());
-        // Mise à jour du cycle avec les champs validés
+    
+        // Valider les données entrantes
+        $validatedData = $request->validate([
+            'AgePoisson' => 'integer|nullable',
+            'NbrePoisson' => 'integer|nullable',
+            'DateDebut' => 'date|nullable',
+            'DateFin' => 'date|after:DateDebut|nullable', // La DateFin doit être après DateDebut
+            'espece' => 'string|max:255|nullable',
+            'description' => 'string|max:255|nullable',
+            'idBassin' => 'exists:bassins,idBassin|nullable'
+        ]);
+    
+        // Mettre à jour les autres champs autorisés
         $cycle->update($validatedData);
-        return response()->json(['message' => 'Cycle mis à jour avec succès']);
+    
+        return response()->json([
+            'message' => 'Cycle mis à jour avec succès',
+            'cycle' => $cycle
+        ]);
     }
+    
+    
 
 
 
