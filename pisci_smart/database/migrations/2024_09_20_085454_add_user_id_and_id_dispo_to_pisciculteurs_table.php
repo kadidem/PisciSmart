@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::table('pisciculteurs', function (Blueprint $table) {
             // Ajout des colonnes et des clés étrangères
-            $table->unsignedBigInteger('user_id')->unique()->after('idPisciculteur');
-            $table->unsignedBigInteger('idDispo')->after('user_id');
+            //$table->unsignedBigInteger('user_id')->unique()->after('idPisciculteur');
+            //$table->unsignedBigInteger('idDispo')->after('user_id');
 
             // Clé étrangère pour user_id
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            //$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 
             // Clé étrangère pour idDispo
-            $table->foreign('idDispo')->references('idDispo')->on('dispositifs')->onDelete('cascade');
+            //$table->foreign('idDispo')->references('idDispo')->on('dispositifs')->onDelete('cascade');
         });
     }
 

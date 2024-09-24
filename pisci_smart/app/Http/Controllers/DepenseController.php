@@ -6,8 +6,6 @@ use App\Models\Depense;
 use Illuminate\Http\Request;
 use App\Models\Cycle;
 
-
-
 class DepenseController extends Controller
 {
     /**
@@ -36,15 +34,12 @@ class DepenseController extends Controller
             'montant' => 'required|numeric|min:1',
             'date' => 'required|date|before_or_equal:today',
             'idCycle' => 'required|exists:cycles,idCycle'
-
         ],
         [
             'date.before_or_equal' => 'La date ne peut pas être dans le futur. Veuillez entrer une date valide.',
-        ]
-    );
+        ]);
 
-
-        // Créer un cycle
+        // Créer une dépense
         $depense = Depense::create($request->all());
 
         return response()->json(['message' => 'Depense créé avec succès', 'data' => $depense], 201);
@@ -58,6 +53,8 @@ class DepenseController extends Controller
         $depense = Depense::findOrFail($id);
         return response()->json($depense);
     }
+
+
     public function getDepensesByCycle($idCycle)
     {
         // Vérifier si le cycle existe
@@ -78,6 +75,7 @@ class DepenseController extends Controller
         // Retourner la liste des dépenses
         return response()->json($depenses);
     }
+
     /**
      * Show the form for editing the specified resource.
      */
@@ -85,7 +83,7 @@ class DepenseController extends Controller
     {
         //
     }
-   
+
     /**
      * Update the specified resource in storage.
      */
@@ -99,13 +97,11 @@ class DepenseController extends Controller
         ],
         [
             'date.before_or_equal' => 'La date ne peut pas être dans le futur. Veuillez entrer une date valide.',
-        ]
-    );
-
+        ]);
 
         $depense = Depense::findOrFail($id);
-
         $depense->update($request->all());
+
         return response()->json(['message' => 'Depense mis à jour avec succès']);
     }
 
@@ -115,8 +111,11 @@ class DepenseController extends Controller
     public function destroy($id)
     {
         $depense = Depense::findOrFail($id);
-
         $depense->delete();
+
         return response()->json(['message' => 'Depense supprimé avec succès']);
     }
+
+    
 }
+
