@@ -13,13 +13,15 @@ return new class extends Migration
     {
         Schema::create('pisciculteurs', function (Blueprint $table) {
             $table->id('idPisciculteur');
+            $table->unsignedBigInteger('user_id')->unique();
             $table->string('nom');
             $table->string('prenom');
             $table->string('telephone')->unique();
             $table->string('adresse');
             $table->string('password');
-
+            $table->timestamps();
             $table->rememberToken();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 
         });
     }

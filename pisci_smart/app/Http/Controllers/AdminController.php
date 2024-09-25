@@ -14,7 +14,7 @@ class AdminController extends Controller
      */
 
        // Désactiver un utilisateur
-     // Désactiver un compte
+     // Désactiver un compte de
      public function desactiverCompte($id, $type)
      {
          // Trouver l'utilisateur selon le type

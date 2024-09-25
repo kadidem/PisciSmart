@@ -22,7 +22,9 @@ class Cycle extends Model
         'NumCycle',
         'espece',
         'idBassin',
-        'description' // Ajout de description ici
+        'description', // Ajout de description ici
+        'poissons_morts', // Ajout de ce champ
+
     ];
 
     // Méthode pour définir la date de fin

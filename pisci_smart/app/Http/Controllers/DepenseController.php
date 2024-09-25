@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Depense;
 use Illuminate\Http\Request;
-
+use App\Models\Cycle;
 
 class DepenseController extends Controller
 {
@@ -34,15 +34,12 @@ class DepenseController extends Controller
             'montant' => 'required|numeric|min:1',
             'date' => 'required|date|before_or_equal:today',
             'idCycle' => 'required|exists:cycles,idCycle'
-
         ],
         [
             'date.before_or_equal' => 'La date ne peut pas être dans le futur. Veuillez entrer une date valide.',
-        ]
-    );
+        ]);
 
-
-        // Créer un cycle
+        // Créer une dépense
         $depense = Depense::create($request->all());
 
         return response()->json(['message' => 'Depense créé avec succès', 'data' => $depense], 201);
@@ -55,6 +52,28 @@ class DepenseController extends Controller
     {
         $depense = Depense::findOrFail($id);
         return response()->json($depense);
+    }
+
+
+    public function getDepensesByCycle($idCycle)
+    {
+        // Vérifier si le cycle existe
+        $cycle = Cycle::find($idCycle);
+
+        if (!$cycle) {
+            return response()->json(['message' => 'Cycle non trouvé'], 404);
+        }
+
+        // Récupérer toutes les dépenses associées à ce cycle
+        $depenses = Depense::where('idCycle', $idCycle)->get();
+
+        // Vérifier si des dépenses existent pour ce cycle
+        if ($depenses->isEmpty()) {
+            return response()->json(['message' => 'Aucune dépense trouvée pour ce cycle'], 404);
+        }
+
+        // Retourner la liste des dépenses
+        return response()->json($depenses);
     }
 
     /**
@@ -75,17 +94,14 @@ class DepenseController extends Controller
             'montant' => 'required|numeric|min:1',
             'date' => 'required|date|before_or_equal:today',
             'idCycle' => 'required|exists:cycles,idCycle'
-
         ],
         [
             'date.before_or_equal' => 'La date ne peut pas être dans le futur. Veuillez entrer une date valide.',
-        ]
-    );
-
+        ]);
 
         $depense = Depense::findOrFail($id);
-
         $depense->update($request->all());
+
         return response()->json(['message' => 'Depense mis à jour avec succès']);
     }
 
@@ -95,8 +111,11 @@ class DepenseController extends Controller
     public function destroy($id)
     {
         $depense = Depense::findOrFail($id);
-
         $depense->delete();
+
         return response()->json(['message' => 'Depense supprimé avec succès']);
     }
+
+    
 }
+

@@ -22,9 +22,6 @@ class User extends Authenticatable
         'nom',
         'prenom',
         'telephone',
-        'adresse',
-        'idDispo',
-        'idPisciculteur',
         'password',
     ];
 

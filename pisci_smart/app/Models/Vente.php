@@ -22,4 +22,10 @@ class Vente extends Model
     protected $rules = [
         'date' => 'required|date|before_or_equal:today',
     ];
+
+
+    public function cycle()
+    {
+        return $this->belongsTo(Cycle::class, 'cycle_id'); // Remplace 'cycle_id' par le nom de ta colonne de référence
+    }
 }

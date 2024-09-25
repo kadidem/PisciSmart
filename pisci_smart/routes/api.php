@@ -61,11 +61,11 @@ Route::delete('/employe/{id}', [EmployeController::class, 'delete_employe']);
 Route::get('/employes/total-par-pisciculteur', [EmployeController::class, 'getTotalEmployesByPisciculteur']);
 
 //nourriture
-Route::get('/nourriture', [NourritureController::class, 'get_all_nourriture']);
-Route::get('/nourriture/{id}', [NourritureController::class, 'getNourritureById']);
-Route::post('/nourriture', [NourritureController::class, 'create_nourriture']);
-Route::put('/nourriture/{id}', [NourritureController::class, 'update_nourriture']);
-Route::delete('/nourriture/{id}', [NourritureController::class, 'delete_nourriture']);
+Route::get('/nourritures', [NourritureController::class, 'get_all_nourriture']);
+Route::get('/nourritures/{id}', [NourritureController::class, 'getNourritureById']);
+Route::post('/nourritures', [NourritureController::class, 'create_nourriture']);
+Route::put('/nourritures/{id}', [NourritureController::class, 'update_nourriture']);
+Route::delete('/nourritures/{id}', [NourritureController::class, 'delete_nourriture']);
 
 
 //visiteur
@@ -79,13 +79,13 @@ Route::delete('/visiteur/{id}', [VisiteurController::class, 'delete_visiteur']);
 //dispositif
 Route::get('/dispositif', [DispositifController::class, 'get_all_dispositif']);
 Route::get('/dispositif/{id}', [DispositifController::class, 'getDispositifById']);
+
 Route::post('/dispositif', [DispositifController::class, 'create_dispositif']);
 Route::put('/dispositif/{id}', [DispositifController::class, 'update_dispositif']);
 Route::delete('/dispositif/{id}', [DispositifController::class, 'delete_dispositif']);
 Route::get('/dispositifs/count/{idPisciculteur}', [DispositifController::class, 'count_dispositifs_by_pisciculteur']);
 Route::get('/dispositifs/pisciculteur/{idPisciculteur}', [DispositifController::class, 'get_dispositifs_by_pisciculteur']);
 Route::get('/dispositifs/count', [DispositifController::class, 'count_all_dispositifs']);
-
 
 //notification
 Route::get('/notification', [NotificationController::class, 'get_all_notification']);
@@ -104,8 +104,13 @@ Route::delete('/bassin/{id}', [BassinController::class, 'delete_Bassin']);
 
 //cycle,vente,depense,perte
 // Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('cycles', CycleController::class);
+Route::get('/bassins/{idBassin}/cycles', [CycleController::class, 'getCyclesByBassin']);
+
+Route::apiResource('cycles', CycleController::class);
 // });
+Route::get('/cycles/{idCycle}/ventes', [VenteController::class, 'getVentesByCycle']);
+Route::get('/cycles/{idCycle}/depenses', [DepenseController::class, 'getDepensesByCycle']);
+
 Route::apiResource('depenses', DepenseController::class);
 Route::apiResource('ventes', VenteController::class);
 Route::apiResource('pertes', PerteController::class);
@@ -118,7 +123,7 @@ Route::get('/type-demandes', [TypeDemandeController::class, 'index']); // Récup
 
 // Routes pour les commentaires
 Route::get('/commentaires', [CommentaireController::class, 'index']);
-Route::get('/commentaires/{idCommentaire}', [CommentaireController::class,'show']);
+Route::get('/commentaires/{idCommentaire}', [CommentaireController::class, 'show']);
 Route::post('/commentaires', [CommentaireController::class, 'store']);
 Route::put('/commentaires/{idCommentaire}', [CommentaireController::class, 'update']);
 Route::delete('/commentaires/{idCommentaire}', [CommentaireController::class, 'destroy']);
@@ -166,9 +171,6 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
 
 
-
-
-
 // statistiques (pisciculteurs,employe, visiteurs)
 Route::get('/statistiques-utilisateurs', [StatistiquesController::class, 'getStatistiquesUtilisateurs']);
 //details par utilisateurs
@@ -184,3 +186,13 @@ Route::post('/admin/activer-compte/{id}/{type}', [AdminController::class, 'activ
 Route::get('/notifications/pisciculteur/{idPisciculteur}', [CycleController::class, 'getPisciculteurNotifications']);
 Route::get('/notifications/employe/{idEmploye}', [CycleController::class, 'getEmployeNotifications']);
 Route::post('/check-cycles', [CycleController::class, 'checkCycleEndDate']);
+
+// Route API pour calculer les totaux des ventes, dépenses et bénéfice
+
+
+Route::get('/total-depenses/{id}', [CycleController::class, 'getTotalDepenses']);
+Route::get('/total-ventes/{id}', [CycleController::class, 'getTotalVentes']);
+Route::get('/cycle/{id}/benefice', [CycleController::class, 'getBenefice']);
+
+//poisson mort
+Route::post('/cycles/{id}/poissons-morts', [CycleController::class, 'addPoissonsMorts']);
