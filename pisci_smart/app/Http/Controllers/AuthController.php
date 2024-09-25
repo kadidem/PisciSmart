@@ -42,7 +42,6 @@ class AuthController extends Controller
     }
 
 
-
     // Connexion
    // Connexion
 public function login(Request $request)
