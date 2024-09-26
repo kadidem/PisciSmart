@@ -15,9 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nom');
             $table->string('prenom');
-            $table->string('telephone')->unique(); // Numéro de téléphone unique
-            //$table->string('adresse')->nullable();
-            // $table->string('role'); // Administrateur, Pisciculteur, Visiteur, Employé
+            $table->string('telephone')->unique(); 
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();

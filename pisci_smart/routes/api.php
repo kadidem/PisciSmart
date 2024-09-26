@@ -196,3 +196,7 @@ Route::get('/cycle/{id}/benefice', [CycleController::class, 'getBenefice']);
 
 //poisson mort
 Route::post('/cycles/{id}/poissons-morts', [CycleController::class, 'addPoissonsMorts']);
+
+
+Route::post('/dispositifs', [DispositifController::class, 'ajouterDispositif'])->middleware('auth:sanctum');
+Route::get('/pisciculteur/dispositifs', [DispositifController::class, 'getDispositifsParPisciculteur'])->middleware('auth:sanctum');
