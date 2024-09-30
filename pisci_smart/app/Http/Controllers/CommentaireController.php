@@ -134,6 +134,7 @@ class CommentaireController extends Controller
         $commentaire->delete();
 
         return response()->json(['message' => 'Commentaire supprimé avec succès!']);
+        
     }
 }
 
