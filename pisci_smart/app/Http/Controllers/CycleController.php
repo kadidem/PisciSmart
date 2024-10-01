@@ -268,7 +268,8 @@ class CycleController extends Controller
 
         // Calculer les poissons restants
         $poissonsRestants = $cycle->NbrePoisson - $cycle->poissons_morts - $totalVentesQuantite;
-
+$encours = 'En Cours';
+$terminer = 'Terminé';
         // Retourner les informations du cycle avec le statut
         return response()->json([
             'idCycle' => $cycle->idCycle,
@@ -280,7 +281,7 @@ class CycleController extends Controller
             'espece' => $cycle->espece,
             'poissons_morts' => $cycle->poissons_morts,
             'poissons_restants' => $poissonsRestants,
-            '   ' => $cycleTermine ? 'Terminé' : 'En cours',
+            'statut_Cycle' => $cycleTermine ? $terminer : $encours ,
         ]);
     }
 
