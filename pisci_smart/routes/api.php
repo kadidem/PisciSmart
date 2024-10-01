@@ -203,3 +203,9 @@ Route::post('/cycles/{id}/poissons-morts', [CycleController::class, 'addPoissons
 
 Route::post('/dispositifs', [DispositifController::class, 'ajouterDispositif'])->middleware('auth:sanctum');
 Route::get('/pisciculteur/dispositifs', [DispositifController::class, 'getDispositifsParPisciculteur'])->middleware('auth:sanctum');
+
+Route::get('/pisciculteur/{idPisciculteur}/dispositifs/numero-serie', [DispositifController::class, 'getDispositifsByPisciculteur']);
+
+
+// Route pour récupérer les informations des employés d'un pisciculteur spécifique
+Route::get('/employes-info/{idPisciculteur}', [EmployeController::class, 'getEmployeInfoByPisciculteur']);

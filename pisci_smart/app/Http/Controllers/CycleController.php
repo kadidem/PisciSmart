@@ -279,7 +279,7 @@ class CycleController extends Controller
             'espece' => $cycle->espece,
             'poissons_morts' => $cycle->poissons_morts,
             'poissons_restants' => $poissonsRestants,
-            '   ' => $cycleTermine ? 'Terminé' : 'En cours',
+            'statut_Cycle' => $cycleTermine ? 'Terminé' : 'En cours',
         ]);
     }
 

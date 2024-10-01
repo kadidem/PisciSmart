@@ -277,4 +277,24 @@ class DispositifController extends Controller
     }
 }
 
+// Dans DispositifController
+public function getDispositifsByPisciculteur(Request $request, $idPisciculteur)
+{
+    // Vérifier si le pisciculteur existe
+    $pisciculteur = Pisciculteur::find($idPisciculteur);
+
+    if (!$pisciculteur) {
+        return response()->json([
+            'message' => 'Pisciculteur non trouvé'
+        ], 404);
+    }
+
+    // Récupérer uniquement les numéros de série des dispositifs associés au pisciculteur
+    $numeroSeries = $pisciculteur->dispositifs()->pluck('numero_serie');
+
+    return response()->json([
+        'numero_serie' => $numeroSeries
+    ], 200);
+}
+
 }
