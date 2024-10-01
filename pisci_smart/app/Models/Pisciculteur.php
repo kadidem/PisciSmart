@@ -43,5 +43,9 @@ class Pisciculteur extends Authenticatable
     {
         return $this->belongsTo(Dispositif::class, 'idDispo', 'idDispo');
     }
+    // Dans le modèle Pisciculteur
+    public function dispositifs()
+    {
+        return $this->hasMany(Dispositif::class, 'idPisciculteur'); // Changez 'idPisciculteur' si nécessaire
+    }
 }
-

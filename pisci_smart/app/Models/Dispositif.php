@@ -12,4 +12,11 @@ class Dispositif extends Model
     protected $primaryKey = 'idDispo';
 
     public $timestamps = false;
+
+     // Relation avec le modèle Pisciculteur
+     public function pisciculteur()
+     {
+         return $this->belongsTo(Pisciculteur::class, 'idPisciculteur');
+     }
+
 }

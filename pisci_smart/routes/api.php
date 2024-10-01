@@ -110,6 +110,9 @@ Route::apiResource('cycles', CycleController::class);
 // });
 Route::get('/cycles/{idCycle}/ventes', [VenteController::class, 'getVentesByCycle']);
 Route::get('/cycles/{idCycle}/depenses', [DepenseController::class, 'getDepensesByCycle']);
+Route::get('/cyclesE', [CycleController::class, 'getActiveCycles']);
+
+
 
 Route::apiResource('depenses', DepenseController::class);
 Route::apiResource('ventes', VenteController::class);
@@ -196,3 +199,13 @@ Route::get('/cycle/{id}/benefice', [CycleController::class, 'getBenefice']);
 
 //poisson mort
 Route::post('/cycles/{id}/poissons-morts', [CycleController::class, 'addPoissonsMorts']);
+
+
+Route::post('/dispositifs', [DispositifController::class, 'ajouterDispositif'])->middleware('auth:sanctum');
+Route::get('/pisciculteur/dispositifs', [DispositifController::class, 'getDispositifsParPisciculteur'])->middleware('auth:sanctum');
+
+Route::get('/pisciculteur/{idPisciculteur}/dispositifs/numero-serie', [DispositifController::class, 'getDispositifsByPisciculteur']);
+
+
+// Route pour récupérer les informations des employés d'un pisciculteur spécifique
+Route::get('/employes-info/{idPisciculteur}', [EmployeController::class, 'getEmployeInfoByPisciculteur']);

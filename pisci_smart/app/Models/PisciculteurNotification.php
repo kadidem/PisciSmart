@@ -21,4 +21,13 @@ class PisciculteurNotification extends Model
         'actions' => 'array', // Cast du JSON en tableau PHP
     ];
 
+     // Relation avec le modèle User
+     public function user()
+     {
+         return $this->belongsTo(User::class, 'user_id');
+     }
+
+   
+
+
 }

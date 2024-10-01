@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Dispositif;
+use App\Models\Pisciculteur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -32,8 +33,8 @@ class DispositifController extends Controller
 
         // Générer le QR code avec l'ID du dispositif
         $qrCode = QrCode::format('png')
-                        ->size(200)
-                        ->generate($dispositif->numero_serie);
+            ->size(200)
+            ->generate($dispositif->numero_serie);
 
         // Retourner le QR code comme une image
         return response($qrCode)->header('Content-Type', 'image/png');
@@ -80,7 +81,6 @@ class DispositifController extends Controller
                 'status' => 'success',
                 'data' => $dispositif
             ], 200);
-
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -135,7 +135,6 @@ class DispositifController extends Controller
                 'message' => 'Dispositif ajouté avec succès.',
                 'dispositif' => $newdispositif
             ], 201);
-
         } catch (ValidationException $e) {
             return response()->json(['error' => $e->errors()], 422);
         } catch (\Exception $e) {
@@ -184,7 +183,6 @@ class DispositifController extends Controller
                 'message' => 'Dispositif mis à jour avec succès.',
                 'dispositif' => $dispositif
             ], 200);
-
         } catch (ValidationException $e) {
             return response()->json(['error' => 'Erreur de validation: ' . json_encode($e->errors())], 422);
         } catch (\Exception $e) {
@@ -206,7 +204,6 @@ class DispositifController extends Controller
                     'total_dispositifs' => $count
                 ]
             ], 200);
-
         } catch (\Exception $e) {
             Log::error('Erreur lors du comptage des dispositifs: ' . $e->getMessage());
             return response()->json([
@@ -215,6 +212,89 @@ class DispositifController extends Controller
             ], 500);
         }
     }
+    public function ajouterDispositif(Request $request)
+    {
+        // Valider les données
+        $request->validate([
+            'num' => 'required|string',
+        ]);
+
+        $user = $request->user();
+
+        // Vérifier si l'utilisateur est déjà un pisciculteur
+        if (!$user->pisciculteur) {
+            // Créer un pisciculteur pour cet utilisateur s'il n'existe pas encore
+            $pisciculteur = Pisciculteur::create([
+                'user_id' => $user->id,
+                'nom' => $user->nom,
+                'prenom' => $user->prenom,
+                'telephone' => $user->telephone,
+                'password' => $user->password,
+                // Autres données spécifiques aux pisciculteurs
+            ]);
+        } else {
+            $pisciculteur = $user->pisciculteur;
+        }
+
+        // Vérifier si le dispositif avec ce num existe déjà
+        $dispositif = Dispositif::where('num', $request->num)->first();
+
+        if ($dispositif) {
+            // Si le dispositif existe, associer le pisciculteur
+            $dispositif->idPisciculteur = $pisciculteur->idPisciculteur;
+            $dispositif->save();
+
+            return response()->json([
+                'message' => 'Dispositif associé avec succès au pisciculteur.',
+                'dispositif' => $dispositif
+            ], 200);
+        } else {
+            // Si le dispositif n'existe pas, retourner une erreur
+            return response()->json([
+                'message' => 'Le dispositif avec ce numéro n\'existe pas.'
+            ], 404);
+        }
+    }
+
+    //liste des dispositifs associés à un pisciculteur
+    public function getDispositifsParPisciculteur(Request $request)
+{
+    // Récupérer l'utilisateur authentifié
+    $user = $request->user();
+
+    // Vérifier si l'utilisateur est un pisciculteur
+    if ($user->pisciculteur) {
+        // Récupérer uniquement les 'num' des dispositifs associés au pisciculteur
+        $dispositifs = $user->pisciculteur->dispositifs()->pluck('num');
+
+        return response()->json([
+            'dispositifs' => $dispositifs
+        ], 200);
+    } else {
+        return response()->json([
+            'message' => 'L\'utilisateur n\'est pas un pisciculteur.'
+        ], 404);
+    }
 }
 
+// Dans DispositifController
+public function getDispositifsByPisciculteur(Request $request, $idPisciculteur)
+{
+    // Vérifier si le pisciculteur existe
+    $pisciculteur = Pisciculteur::find($idPisciculteur);
 
+    if (!$pisciculteur) {
+        return response()->json([
+            'message' => 'Pisciculteur non trouvé'
+        ], 404);
+    }
+
+    // Récupérer uniquement les numéros de série des dispositifs associés au pisciculteur
+    $numeroSeries = $pisciculteur->dispositifs()->pluck('numero_serie');
+
+    return response()->json([
+        'numero_serie' => $numeroSeries
+    ], 200);
+}
+
+}

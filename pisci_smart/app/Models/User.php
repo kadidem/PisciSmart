@@ -28,7 +28,7 @@ class User extends Authenticatable
 
 
     // Relation avec le modèle Dispositif
- 
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -56,4 +56,10 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    // Relation avec le modèle Pisciculteur
+    public function pisciculteur()
+    {
+        return $this->hasOne(Pisciculteur::class);
+    }
+
 }

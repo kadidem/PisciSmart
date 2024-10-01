@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('idTypeDemande')->constrained('type_demandes', 'idTypeDemande')->onDelete('cascade');
             $table->text('contenu');
             $table->timestamps();
+        
         });
 
 

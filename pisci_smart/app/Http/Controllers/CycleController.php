@@ -212,7 +212,6 @@ class CycleController extends Controller
     }
 
 
-
     public function getTotalDepenses($id)
     {
         // Assure-toi que le modèle Depense a une relation avec Cycle
@@ -391,5 +390,42 @@ $terminer = 'Terminé';
             'poissons_morts' => $cycle->poissons_morts,
             'poissons_restants' => $poissonsRestants,
         ], 200);
+    }
+
+    public function getActiveCycles()
+    {
+        // Récupérer les cycles dont la DateFin est supérieure ou égale à aujourd'hui
+        $activeCycles = Cycle::where('DateFin', '>', now())->get();
+
+        // Si aucun cycle n'est trouvé, retourner un message
+        if ($activeCycles->isEmpty()) {
+            return response()->json(['message' => 'Aucun cycle en cours trouvé'], 200);
+        }
+
+        // Préparer les détails des cycles actifs
+        $activeCyclesDetails = $activeCycles->map(function ($cycle) {
+            // Obtenir les ventes liées à chaque cycle
+            $ventes = Vente::where('idCycle', $cycle->idCycle)->get();
+            $totalVentesQuantite = $ventes->sum('quantite');
+
+            // Calculer les poissons restants
+            $poissonsRestants = $cycle->NbrePoisson - $cycle->poissons_morts - $totalVentesQuantite;
+
+            return [
+                'idCycle' => $cycle->idCycle,
+                'AgePoisson' => $cycle->AgePoisson,
+                'NbrePoisson' => $cycle->NbrePoisson,
+                'DateDebut' => $cycle->DateDebut,
+                'DateFin' => $cycle->DateFin,
+                'NumCycle' => $cycle->NumCycle,
+                'espece' => $cycle->espece,
+                'poissons_morts' => $cycle->poissons_morts,
+                'poissons_restants' => $poissonsRestants,
+                'statut_Cycle' => 'En cours',
+            ];
+        });
+
+        // Retourner la liste des cycles actifs avec leurs détails
+        return response()->json($activeCyclesDetails);
     }
 }

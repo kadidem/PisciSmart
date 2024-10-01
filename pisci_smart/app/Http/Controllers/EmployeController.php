@@ -156,6 +156,40 @@ class EmployeController extends Controller
         return response()->json(['total_employes' => $totalEmployes]);
     }
 
+    //afficher les données employe
+    // Afficher uniquement le nom, prénom, téléphone, et adresse des employés d'un pisciculteur spécifique
+public function getEmployeInfoByPisciculteur($idPisciculteur)
+{
+    try {
+        // Vérifier si le pisciculteur existe
+        $pisciculteur = Pisciculteur::find($idPisciculteur);
+
+        if (!$pisciculteur) {
+            return response()->json(['message' => 'Pisciculteur non trouvé'], 404);
+        }
+
+        // Utilisation de la méthode select pour récupérer uniquement les champs spécifiés
+        $employes = Employe::select('nom', 'prenom', 'telephone', 'adresse')
+            ->where('idPisciculteur', $idPisciculteur)
+            ->get();
+
+        // Retourner les résultats sous forme de JSON
+        return response()->json([
+            'status' => 'success',
+            'data' => $employes
+        ], 200);
+
+    } catch (\Exception $e) {
+        // Gérer les erreurs et retourner une réponse d'erreur
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Erreur lors de la récupération des informations des employés.',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
+
 
 }
 

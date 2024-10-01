@@ -147,5 +147,7 @@ class PisciculteurController extends Controller
 
         return response()->json($res);
     }
+
+    
 }
 
