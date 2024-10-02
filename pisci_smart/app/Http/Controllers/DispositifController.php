@@ -212,17 +212,20 @@ class DispositifController extends Controller
             ], 500);
         }
     }
+
     public function ajouterDispositif(Request $request)
     {
         // Valider les données
         $request->validate([
-            'num' => 'required|string',
+            'numero_serie' => 'required|string',
         ]);
 
         $user = $request->user();
 
         // Vérifier si l'utilisateur est déjà un pisciculteur
         if (!$user->pisciculteur) {
+            Log::info('Création d\'un nouveau pisciculteur pour l\'utilisateur ID: ' . $user->id);
+
             // Créer un pisciculteur pour cet utilisateur s'il n'existe pas encore
             $pisciculteur = Pisciculteur::create([
                 'user_id' => $user->id,
@@ -233,14 +236,17 @@ class DispositifController extends Controller
                 // Autres données spécifiques aux pisciculteurs
             ]);
         } else {
+            Log::info('L\'utilisateur ID: ' . $user->id . ' est déjà un pisciculteur avec ID: ' . $user->pisciculteur->idPisciculteur);
             $pisciculteur = $user->pisciculteur;
         }
 
-        // Vérifier si le dispositif avec ce num existe déjà
-        $dispositif = Dispositif::where('num', $request->num)->first();
+        // Vérifier si le dispositif avec ce numero_serie existe déjà
+        Log::info('Recherche du dispositif avec le numéro de série: ' . $request->numero_serie);
+        $dispositif = Dispositif::where('numero_serie', $request->numero_serie)->first();
 
         if ($dispositif) {
             // Si le dispositif existe, associer le pisciculteur
+            Log::info('Dispositif trouvé, association du pisciculteur ID: ' . $pisciculteur->idPisciculteur . ' au dispositif ID: ' . $dispositif->id);
             $dispositif->idPisciculteur = $pisciculteur->idPisciculteur;
             $dispositif->save();
 
@@ -250,51 +256,52 @@ class DispositifController extends Controller
             ], 200);
         } else {
             // Si le dispositif n'existe pas, retourner une erreur
+            Log::warning('Le dispositif avec le numéro de série: ' . $request->numero_serie . ' n\'existe pas.');
             return response()->json([
-                'message' => 'Le dispositif avec ce numéro n\'existe pas.'
+                'message' => 'Le dispositif avec ce numéro de série n\'existe pas.'
             ], 404);
         }
     }
 
+
     //liste des dispositifs associés à un pisciculteur
     public function getDispositifsParPisciculteur(Request $request)
-{
-    // Récupérer l'utilisateur authentifié
-    $user = $request->user();
+    {
+        // Récupérer l'utilisateur authentifié
+        $user = $request->user();
 
-    // Vérifier si l'utilisateur est un pisciculteur
-    if ($user->pisciculteur) {
-        // Récupérer uniquement les 'num' des dispositifs associés au pisciculteur
-        $dispositifs = $user->pisciculteur->dispositifs()->pluck('num');
+        // Vérifier si l'utilisateur est un pisciculteur
+        if ($user->pisciculteur) {
+            // Récupérer uniquement les 'num' des dispositifs associés au pisciculteur
+            $dispositifs = $user->pisciculteur->dispositifs()->pluck('num');
+
+            return response()->json([
+                'dispositifs' => $dispositifs
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'L\'utilisateur n\'est pas un pisciculteur.'
+            ], 404);
+        }
+    }
+
+    // Dans DispositifController
+    public function getDispositifsByPisciculteur(Request $request, $idPisciculteur)
+    {
+        // Vérifier si le pisciculteur existe
+        $pisciculteur = Pisciculteur::find($idPisciculteur);
+
+        if (!$pisciculteur) {
+            return response()->json([
+                'message' => 'Pisciculteur non trouvé'
+            ], 404);
+        }
+
+        // Récupérer uniquement les numéros de série des dispositifs associés au pisciculteur
+        $numeroSeries = $pisciculteur->dispositifs()->pluck('numero_serie');
 
         return response()->json([
-            'dispositifs' => $dispositifs
+            'numero_serie' => $numeroSeries
         ], 200);
-    } else {
-        return response()->json([
-            'message' => 'L\'utilisateur n\'est pas un pisciculteur.'
-        ], 404);
     }
-}
-
-// Dans DispositifController
-public function getDispositifsByPisciculteur(Request $request, $idPisciculteur)
-{
-    // Vérifier si le pisciculteur existe
-    $pisciculteur = Pisciculteur::find($idPisciculteur);
-
-    if (!$pisciculteur) {
-        return response()->json([
-            'message' => 'Pisciculteur non trouvé'
-        ], 404);
-    }
-
-    // Récupérer uniquement les numéros de série des dispositifs associés au pisciculteur
-    $numeroSeries = $pisciculteur->dispositifs()->pluck('numero_serie');
-
-    return response()->json([
-        'numero_serie' => $numeroSeries
-    ], 200);
-}
-
 }
