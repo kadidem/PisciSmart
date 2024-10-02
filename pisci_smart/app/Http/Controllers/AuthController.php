@@ -13,7 +13,6 @@ use App\Models\User;
 class AuthController extends Controller
 {
 
-
     // Inscription
     public function register(Request $request)
     {
@@ -35,50 +34,56 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ];
 
-        // Créer l'utilisateur dans la table `pisciculteurs` (par défaut)
+
         $user = User::create($data);
 
         return response()->json(['message' => 'Utilisateur créé avec succès'], 201);
     }
 
-
     // Connexion
-   // Connexion
-public function login(Request $request)
-{
-    // Valider les données de la requête
-    $request->validate([
-        'telephone' => 'required',
-        'password' => 'required',
-    ]);
+    // Connexion
+    public function login(Request $request)
+    {
+        // Valider les données de la requête
+        $request->validate([
+            'telephone' => 'required',
+            'password' => 'required',
+        ]);
 
-    // Chercher l'utilisateur dans la table `users`
-    $user = User::where('telephone', $request->telephone)->first();
+        // Chercher l'utilisateur dans la table `users`
+        $user = User::where('telephone', $request->telephone)->first();
 
-    // Vérifier si l'utilisateur est trouvé
-    if (!$user) {
-        return response()->json(['message' => 'Utilisateur non trouvé'], 404);
+        // Vérifier si l'utilisateur est trouvé
+        if (!$user) {
+            return response()->json(['message' => 'Utilisateur non trouvé'], 404);
+        }
+
+        // Vérifier le mot de passe
+        if (Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Le mot de passe est incorrect.'], 401);
+        }
+
+        // Charger explicitement la relation pisciculteur
+        $user->load('pisciculteur');
+
+        // Créer un token d'authentification
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Connexion réussie',
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'user' => [
+                'telephone' => $user->telephone,
+                'prenom' => $user->prenom,
+                'nom' => $user->nom,
+                'idPisciculteur' => $user->pisciculteur ? $user->pisciculteur->idPisciculteur : null
+            ]
+        ], 200);
     }
 
-    // Vérifier le mot de passe
-    if (Hash::check($request->password, $user->password)) {
-        return response()->json(['message' => 'Le mot de passe est incorrect.'], 401);
-    }
 
-    // Créer un token d'authentification
-    $token = $user->createToken('auth_token')->plainTextToken;
 
-    return response()->json([
-        'message' => 'Connexion réussie',
-        'access_token' => $token,
-        'token_type' => 'Bearer',
-        'user' => [
-            'telephone' => $user->telephone,
-            'prenom' => $user->prenom,
-            'nom' => $user->nom
-        ]
-    ], 200);
-}
 
     // Déconnexion
     public function logout(Request $request)
@@ -98,7 +103,15 @@ public function login(Request $request)
         ], 401);
     }
 
-    
+    public function getAllUsers()
+    {
+        // Récupérer tous les utilisateurs
+        $users = User::all();
 
-
+        // Retourner la liste des utilisateurs avec une réponse JSON
+        return response()->json([
+            'message' => 'Liste des utilisateurs récupérée avec succès',
+            'users' => $users
+        ], 200);
+    }
 }

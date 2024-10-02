@@ -209,3 +209,6 @@ Route::get('/pisciculteur/{idPisciculteur}/dispositifs/numero-serie', [Dispositi
 
 // Route pour récupérer les informations des employés d'un pisciculteur spécifique
 Route::get('/employes-info/{idPisciculteur}', [EmployeController::class, 'getEmployeInfoByPisciculteur']);
+
+Route::get('/users', [AuthController::class, 'getAllUsers']);
+
