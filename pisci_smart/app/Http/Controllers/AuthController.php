@@ -77,7 +77,8 @@ class AuthController extends Controller
                 'telephone' => $user->telephone,
                 'prenom' => $user->prenom,
                 'nom' => $user->nom,
-                'idPisciculteur' => $user->pisciculteur ? $user->pisciculteur->idPisciculteur : null
+                'idPisciculteur' => $user->pisciculteur ? $user->pisciculteur->idPisciculteur : ''
+
             ]
         ], 200);
     }
