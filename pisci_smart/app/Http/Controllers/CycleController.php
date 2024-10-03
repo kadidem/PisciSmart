@@ -427,4 +427,39 @@ class CycleController extends Controller
         // Retourner la liste des cycles actifs avec leurs détails
         return response()->json($activeCyclesDetails);
     }
+    //calcul nombre e perte
+    public function updateNombrePertes(Request $request, $id)
+{
+    // Validation des données
+    $request->validate([
+        'nombrePertes' => 'required|integer|min:0',
+    ]);
+
+    // Trouver le cycle par son ID
+    $cycle = Cycle::findOrFail($id);
+
+    // Mettre à jour le nombre de pertes
+    $cycle->nombrePertes += $request->input('nombrePertes');
+
+    // Calculer le nombre de poissons restants
+    $nombreRestant = $cycle->nombrePoissons - $cycle->nombrePertes;
+
+    // S'assurer que le nombre de poissons restants n'est pas négatif
+    if ($nombreRestant < 0) {
+        return response()->json(['error' => 'Le nombre de poissons restants ne peut pas être négatif.'], 400);
+    }
+
+    // Sauvegarder les modifications
+    $cycle->save();
+
+    // Retourner une réponse JSON avec succès et les détails du cycle
+    return response()->json([
+        'message' => 'Le nombre de pertes a été mis à jour avec succès.',
+        'nombrePoissonsRestants' => $nombreRestant,
+        'cycle' => $cycle,
+    ], 200);
+}
+
+
+
 }

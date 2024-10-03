@@ -156,7 +156,7 @@ class EmployeController extends Controller
         return response()->json(['total_employes' => $totalEmployes]);
     }
 
-    //afficher les données employe
+    
     // Afficher uniquement le nom, prénom, téléphone, et adresse des employés d'un pisciculteur spécifique
 public function getEmployeInfoByPisciculteur($idPisciculteur)
 {

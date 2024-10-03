@@ -212,3 +212,9 @@ Route::get('/employes-info/{idPisciculteur}', [EmployeController::class, 'getEmp
 
 Route::get('/users', [AuthController::class, 'getAllUsers']);
 
+//nombre de perte
+Route::put('/cycles/{id}/pertes', [CycleController::class, 'updateNombrePertes']);
+
+//detail cycle
+Route::get('/cycles/{id}/details', [CycleController::class, 'getCycleDetails']);
+
