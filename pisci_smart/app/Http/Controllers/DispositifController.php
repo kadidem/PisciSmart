@@ -300,8 +300,11 @@ class DispositifController extends Controller
         // Récupérer uniquement les numéros de série des dispositifs associés au pisciculteur
         $numeroSeries = $pisciculteur->dispositifs()->pluck('numero_serie');
 
-        return response()->json([
-            'numero_serie' => $numeroSeries
-        ], 200);
+        // Formater les numéros de série en objets
+        $formattedDispositifs = $numeroSeries->map(function ($numeroSerie) {
+            return ['numero_serie' => $numeroSerie];
+        });
+
+        return response()->json($formattedDispositifs, 200);
     }
 }
