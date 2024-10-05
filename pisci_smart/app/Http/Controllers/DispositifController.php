@@ -252,7 +252,8 @@ class DispositifController extends Controller
 
             return response()->json([
                 'message' => 'Dispositif associé avec succès au pisciculteur.',
-                'dispositif' => $dispositif
+                'dispositif' => $dispositif,
+                'idPisciculteur' => $pisciculteur->idPisciculteur // Ajout de l'idPisciculteur ici
             ], 200);
         } else {
             // Si le dispositif n'existe pas, retourner une erreur

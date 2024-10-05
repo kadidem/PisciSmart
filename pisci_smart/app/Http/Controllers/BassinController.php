@@ -33,7 +33,6 @@ class BassinController extends Controller
                 'status' => 'success',
                 'data' => $bassin
             ], 200);
-
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -73,10 +72,13 @@ class BassinController extends Controller
                 'dimension' => 'required|numeric|min:1', // La dimension doit être un nombre positif
                 'unite' => 'required|in:m2,m3', // Valider que l'unité est soit m2, soit m3
                 'description' => 'required|string|max:255',
-                'idDispo' => 'required|integer|exists:dispositifs,idDispo',
+                //'idDispo' => 'required|integer|exists:dispositifs,idDispo',
+                'numero_serie' => 'required|string|exists:dispositifs,numero_serie',
+                'idPisciculteur' => 'required|exists:pisciculteurs,idPisciculteur', // Validation pour idPisciculteur
                 'date' => 'required|date' // Ajouter la validation pour le champ date
             ]);
 
+            // Créer le bassin avec idPisciculteur
             $newbassin = Bassin::create($validated);
 
             return response()->json([
@@ -91,6 +93,8 @@ class BassinController extends Controller
             return response()->json(['error' => 'Une erreur est survenue: ' . $e->getMessage()], 500);
         }
     }
+
+
 
     // Modifier bassin
     public function update_bassin(Request $request, $idBassin)
@@ -117,7 +121,9 @@ class BassinController extends Controller
                 'dimension' => 'sometimes|numeric|min:1', // Valider que la dimension est un nombre positif
                 'unite' => 'sometimes|in:m2,m3', // Valider que l'unité est soit m2, soit m3
                 'description' => 'required|string|max:255',
-                'idDispo' => 'required|integer|exists:dispositifs,idDispo',
+                //'idDispo' => 'required|integer|exists:dispositifs,idDispo',
+                'numero_serie' => 'required|string|exists:dispositifs,numero_serie',
+                'idPisciculteur' => 'sometimes|exists:pisciculteurs,idPisciculteur', // Validation pour idPisciculteur
                 'date' => 'sometimes|date' // Ajouter la validation pour le champ date
             ]);
 
@@ -139,5 +145,31 @@ class BassinController extends Controller
             return response()->json(['error' => 'Mise à jour échouée: ' . $e->getMessage()], 500);
         }
     }
-}
 
+    // Récupérer les bassins par pisciculteur
+    public function getBassinsByPisciculteur($idPisciculteur)
+    {
+        try {
+            // Récupérer les bassins associés au pisciculteur
+            $bassins = Bassin::where('idPisciculteur', $idPisciculteur)->get();
+
+            if ($bassins->isEmpty()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Aucun bassin trouvé pour ce pisciculteur.'
+                ], 404);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $bassins
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Une erreur s\'est produite lors de la récupération des bassins.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+}

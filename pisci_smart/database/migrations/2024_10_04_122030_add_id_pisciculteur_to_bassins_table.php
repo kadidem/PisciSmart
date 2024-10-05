@@ -9,22 +9,29 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
-        Schema::table('dispositifs', function (Blueprint $table) {
+        Schema::table('bassins', function (Blueprint $table) {
+            // Ajout de la colonne idPisciculteur
             $table->unsignedBigInteger('idPisciculteur')->nullable();
 
-            // Si idPisciculteur est une clé étrangère
+            // Ajout de la contrainte de clé étrangère
             $table->foreign('idPisciculteur')->references('idPisciculteur')->on('pisciculteurs')->onDelete('cascade');
         });
     }
 
-    public function down()
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
-        Schema::table('dispositifs', function (Blueprint $table) {
+        Schema::table('bassins', function (Blueprint $table) {
+            // Suppression de la contrainte de clé étrangère
             $table->dropForeign(['idPisciculteur']);
+
+            // Suppression de la colonne idPisciculteur
             $table->dropColumn('idPisciculteur');
         });
     }
-
 };
+

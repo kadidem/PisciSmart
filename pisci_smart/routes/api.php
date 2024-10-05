@@ -218,3 +218,10 @@ Route::put('/cycles/{id}/pertes', [CycleController::class, 'updateNombrePertes']
 //detail cycle
 Route::get('/cycles/{id}/details', [CycleController::class, 'getCycleDetails']);
 
+Route::delete('/cycles', [CycleController::class, 'destroyAll']);
+
+
+//Route::delete('/cycles/{id}', [CycleController::class, 'destroy']);
+
+//bassin d'un pisciculteur
+Route::get('bassins/pisciculteur/{idPisciculteur}', [BassinController::class, 'getBassinsByPisciculteur']);

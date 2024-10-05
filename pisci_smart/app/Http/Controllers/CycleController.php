@@ -20,6 +20,19 @@ use App\Models\PisciculteurNotification;
 
 class CycleController extends Controller
 {
+
+    public function destroyAll()
+    {
+        // Supprimer les ventes qui référencent les cycles
+        Vente::whereNotNull('idcycle')->delete(); // Ajustez selon votre logique de référence
+
+        // Supprimer tous les cycles
+        Cycle::truncate();
+
+        return response()->json(['message' => 'Tous les cycles et leurs ventes associées ont été supprimés avec succès.']);
+    }
+
+
     public function index(Request $request)
     {
         // Obtenir tous les cycles
@@ -460,6 +473,25 @@ class CycleController extends Controller
     ], 200);
 }
 
+/*public function destroy($id)
+{
+    // Vérifier si le cycle existe
+    $cycle = Cycle::find($id);
+    if (!$cycle) {
+        return response()->json(['message' => 'Cycle non trouvé'], 404);
+    }
+
+    // Supprimer toutes les ventes liées à ce cycle
+    Vente::where('idCycle', $id)->delete();
+
+    // Supprimer toutes les dépenses liées à ce cycle
+    Depense::where('idCycle', $id)->delete();
+
+    // Supprimer le cycle lui-même
+    $cycle->delete();
+
+    return response()->json(['message' => 'Cycle supprimé avec succès, ainsi que toutes les ventes et dépenses associées.'], 200);
+}*/
 
 
 }
