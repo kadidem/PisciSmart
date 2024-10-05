@@ -79,7 +79,17 @@ class BassinController extends Controller
             ]);
 
             // Créer le bassin avec idPisciculteur
-            $newbassin = Bassin::create($validated);
+            //$newbassin = Bassin::create($validated);
+            $newbassin = Bassin::create([
+                'nomBassin' => $validated['nomBassin'],
+                'dimension' => $validated['dimension'],
+                'unite' => $validated['unite'],
+                'description' => $validated['description'],
+                'numero_serie' => $validated['numero_serie'],
+                'idPisciculteur' => $validated['idPisciculteur'], // Assurez-vous d'inclure idPisciculteur
+                'date' => $validated['date']
+            ]);
+
 
             return response()->json([
                 'message' => 'Bassin ajouté avec succès.',

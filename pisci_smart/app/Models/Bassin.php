@@ -10,7 +10,7 @@ class Bassin extends Model
     use HasFactory;
 
     // Les attributs qui peuvent être assignés en masse
-    protected $fillable = ['nomBassin', 'dimension', 'description', 'unite', 'idDispo', 'date','user_id'];
+    protected $fillable = ['nomBassin', 'dimension', 'description', 'unite',  'numero_serie', 'date', 'idPisciculteur'];
 
     // Spécifier la clé primaire si elle n'est da,n pas 'id'
     protected $primaryKey = 'idBassin';
@@ -18,9 +18,9 @@ class Bassin extends Model
     // Désactiver les timestamps si vous ne les utilisez pas
     public $timestamps = false;
 
-     // Relation avec le modèle User
-     public function user()
-     {
-         return $this->belongsTo(User::class);
-     }
+    // Relation avec le modèle Pisciculteur
+    public function pisciculteur()
+    {
+        return $this->belongsTo(Pisciculteur::class, 'idPisciculteur');
+    }
 }
