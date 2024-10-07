@@ -6,16 +6,11 @@ use App\Models\Bassin;
 use App\Models\Cycle;
 use App\Models\Vente;
 use App\Models\Depense;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
-
-
-
 use App\Models\PisciculteurNotification;
 
 class CycleController extends Controller
@@ -96,15 +91,6 @@ class CycleController extends Controller
     public function store(Request $request)
     {
 
-        // // Récupérer l'utilisateur connecté (Pisciculteur)
-        // $user = Auth::guard('sanctum')->user();
-
-        // // Vérifier si le compte est désactivé
-        // if ($user->status == 0) {
-        //     return response()->json(['message' => 'Votre compte est désactivé. Vous ne pouvez pas ajouter de cycle.'], 403);
-        // }
-
-
         $validatedData = $request->validate(
             [
                 'AgePoisson' => 'required|integer',
@@ -139,12 +125,8 @@ class CycleController extends Controller
             ], 422);
         }
 
-
-
         // Calculer automatiquement la date de fin (ajouter 6 mois à la date de début)
         $validatedData['DateFin'] = Carbon::parse($validatedData['DateDebut'])->addMonths(6);
-
-
 
         // Déterminer les normes en fonction de la dimension et de l'unité du bassin
         $dimension = $bassin->dimension;
@@ -296,8 +278,6 @@ class CycleController extends Controller
         ]);
     }
 
-
-
     public function update(Request $request, $id)
     {
         $validatedData =  $request->validate([
@@ -322,7 +302,6 @@ class CycleController extends Controller
                 'DateDebut' => 'prohibited',  // Empêcher la modification de la date de début
             ]);
         }
-
 
         // $cycle->update($request->all());
         // Mise à jour du cycle avec les champs validés
@@ -350,59 +329,61 @@ class CycleController extends Controller
         return response()->json(['message' => 'Cycle supprimé avec succès']);
     }
 
-    public function addPoissonsMorts(Request $request, $idCycle)
-    {
-        // Validation des données entrantes
-        $validator = Validator::make($request->all(), [
-            'nombre_morts' => 'nullable|integer|min:0',
-        ], [
-            'nombre_morts.integer' => 'Le nombre de poissons morts doit être un entier.',
-            'nombre_morts.min' => 'Le nombre de poissons morts ne peut pas être négatif.',
-        ]);
+   //ajout de poisson mort
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
+   public function addPoissonsMorts(Request $request, $idCycle)
+   {
+       // Validation des données entrantes
+       $validator = Validator::make($request->all(), [
+           'nombre_morts' => 'nullable|integer|min:0',
+       ], [
+           'nombre_morts.integer' => 'Le nombre de poissons morts doit être un entier.',
+           'nombre_morts.min' => 'Le nombre de poissons morts ne peut pas être négatif.',
+       ]);
 
-        // Récupérer le cycle
-        $cycle = Cycle::find($idCycle);
+       if ($validator->fails()) {
+           return response()->json(['errors' => $validator->errors()], 422);
+       }
 
-        if (!$cycle) {
-            return response()->json(['message' => 'Cycle non trouvé'], 404);
-        }
+       // Récupérer le cycle
+       $cycle = Cycle::find($idCycle);
 
-        // Initialiser poissons_morts à 0 si null
-        $cycle->poissons_morts = $cycle->poissons_morts ?? 0;
+       if (!$cycle) {
+           return response()->json(['message' => 'Cycle non trouvé'], 404);
+       }
 
-        // Récupérer le nombre de poissons morts ajouté
-        $nombreMorts = $request->input('nombre_morts');
+       // Récupérer le nombre de poissons morts ajouté
+       $nombreMorts = $request->input('nombre_morts');
 
-        if ($nombreMorts === null) {
-            return response()->json(['message' => 'Aucun nombre de poissons morts fourni.'], 400);
-        }
+       if ($nombreMorts === null) {
+           return response()->json(['message' => 'Aucun nombre de poissons morts fourni.'], 400);
+       }
 
-        // Vérifier que l'ajout de poissons morts ne dépasse pas le nombre initial
-        if (($cycle->poissons_morts + $nombreMorts) > $cycle->NbrePoisson) {
-            return response()->json([
-                'error' => 'Le nombre total de poissons morts dépasse le nombre initial de poissons dans le cycle.',
-            ], 422);
-        }
+       // Vérifier que l'ajout de poissons morts ne dépasse pas le nombre initial
+       if (($cycle->poissons_morts + $nombreMorts) > $cycle->NbrePoisson) {
+           return response()->json([
+               'error' => 'Le nombre total de poissons morts dépasse le nombre initial de poissons dans le cycle.',
+           ], 422);
+       }
 
-        // Mettre à jour le nombre de poissons morts
-        $cycle->poissons_morts += $nombreMorts;
+       // Mettre à jour le nombre de poissons morts
+       $cycle->poissons_morts += $nombreMorts;
 
-        // Enregistrer les modifications
-        $cycle->save();
+       // Calculer le nombre de poissons restants
+       $poissonsRestants = $cycle->NbrePoisson - $cycle->poissons_morts;
 
-        // Calculer les poissons restants
-        $poissonsRestants = $cycle->NbrePoisson - $cycle->poissons_morts;
+       // Enregistrer les modifications
+       $cycle->nombrePoissonsRestants = $poissonsRestants; // Stocker le nombre restants
+       $cycle->save();
 
-        return response()->json([
-            'message' => 'Nombre de poissons morts mis à jour avec succès.',
-            'poissons_morts' => $cycle->poissons_morts,
-            'poissons_restants' => $poissonsRestants,
-        ], 200);
-    }
+       return response()->json([
+           'message' => 'Nombre de poissons morts mis à jour avec succès.',
+           'poissons_morts' => $cycle->poissons_morts,
+           'poissons_restants' => $poissonsRestants,
+       ], 200);
+   }
+
+
 
     public function getActiveCycles()
     {
@@ -440,58 +421,36 @@ class CycleController extends Controller
         // Retourner la liste des cycles actifs avec leurs détails
         return response()->json($activeCyclesDetails);
     }
-    //calcul nombre e perte
+    //calcul nombre les pertes
     public function updateNombrePertes(Request $request, $id)
-{
-    // Validation des données
-    $request->validate([
-        'nombrePertes' => 'required|integer|min:0',
-    ]);
+    {
+        // Validation des données
+        $request->validate([
+            'nombrePertes' => 'required|integer|min:0',
+        ]);
 
-    // Trouver le cycle par son ID
-    $cycle = Cycle::findOrFail($id);
+        // Trouver le cycle par son ID
+        $cycle = Cycle::findOrFail($id);
 
-    // Mettre à jour le nombre de pertes
-    $cycle->nombrePertes += $request->input('nombrePertes');
+        // Mettre à jour le nombre de pertes
+        $cycle->nombrePertes += $request->input('nombrePertes');
 
-    // Calculer le nombre de poissons restants
-    $nombreRestant = $cycle->nombrePoissons - $cycle->nombrePertes;
+        // Calculer le nombre de poissons restants
+        $nombreRestant = $cycle->nombrePoissons - $cycle->nombrePertes;
 
-    // S'assurer que le nombre de poissons restants n'est pas négatif
-    if ($nombreRestant < 0) {
-        return response()->json(['error' => 'Le nombre de poissons restants ne peut pas être négatif.'], 400);
+        // S'assurer que le nombre de poissons restants n'est pas négatif
+        if ($nombreRestant < 0) {
+            return response()->json(['error' => 'Le nombre de poissons restants ne peut pas être négatif.'], 400);
+        }
+
+        // Sauvegarder les modifications
+        $cycle->save();
+
+        // Retourner une réponse JSON avec succès et les détails du cycle
+        return response()->json([
+            'message' => 'Le nombre de pertes a été mis à jour avec succès.',
+            'nombrePoissonsRestants' => $nombreRestant,
+            'cycle' => $cycle,
+        ], 200);
     }
-
-    // Sauvegarder les modifications
-    $cycle->save();
-
-    // Retourner une réponse JSON avec succès et les détails du cycle
-    return response()->json([
-        'message' => 'Le nombre de pertes a été mis à jour avec succès.',
-        'nombrePoissonsRestants' => $nombreRestant,
-        'cycle' => $cycle,
-    ], 200);
-}
-
-/*public function destroy($id)
-{
-    // Vérifier si le cycle existe
-    $cycle = Cycle::find($id);
-    if (!$cycle) {
-        return response()->json(['message' => 'Cycle non trouvé'], 404);
-    }
-
-    // Supprimer toutes les ventes liées à ce cycle
-    Vente::where('idCycle', $id)->delete();
-
-    // Supprimer toutes les dépenses liées à ce cycle
-    Depense::where('idCycle', $id)->delete();
-
-    // Supprimer le cycle lui-même
-    $cycle->delete();
-
-    return response()->json(['message' => 'Cycle supprimé avec succès, ainsi que toutes les ventes et dépenses associées.'], 200);
-}*/
-
-
 }

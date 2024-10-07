@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PisciculteurController;
@@ -225,3 +224,10 @@ Route::delete('/cycles', [CycleController::class, 'destroyAll']);
 
 //bassin d'un pisciculteur
 Route::get('bassins/pisciculteur/{idPisciculteur}', [BassinController::class, 'getBassinsByPisciculteur']);
+
+//ajouter poisson mort
+Route::post('/cycle/{idCycle}/poissons-morts', [CycleController::class, 'addPoissonsMorts']);
+
+
+
+

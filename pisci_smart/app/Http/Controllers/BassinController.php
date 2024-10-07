@@ -170,10 +170,8 @@ class BassinController extends Controller
                 ], 404);
             }
 
-            return response()->json([
-                'status' => 'success',
-                'data' => $bassins
-            ], 200);
+            // Retourner directement le tableau des bassins
+            return response()->json($bassins, 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
