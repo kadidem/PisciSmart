@@ -99,10 +99,13 @@ class CycleController extends Controller
                 'NumCycle' => 'required|integer|unique:cycles,NumCycle',
                 'espece' => 'required|string|max:255',
                 'description' => 'required|string|max:255',
-                'idBassin' => 'required|exists:bassins,idBassin'
+                'idBassin' => 'required|exists:bassins,idBassin',
+                'numero_serie' => 'nullable|string|max:255' // Validation pour numero_serie
+                //'numero_serie' => 'nullable|exists:bassins,idBassin|string|max:255' // Validation pour numero_serie
             ],
             [
                 'DateDebut.before_or_equal' => 'La date ne peut pas être dans le futur. Veuillez entrer une date valide.',
+                //'numero_serie.exists' => 'Le numéro de série doit correspondre à un bassin existant.',
             ]
         );
 
@@ -275,6 +278,7 @@ class CycleController extends Controller
             'poissons_morts' => $cycle->poissons_morts,
             'poissons_restants' => $poissonsRestants,
             'statut_Cycle' => $cycleTermine ? 'Terminé' : 'En cours',
+            'numero_serie' => 'nullable|string|max:255' // Validation pour numero_serie
         ]);
     }
 
@@ -310,9 +314,7 @@ class CycleController extends Controller
     }
 
 
-
-
-    public function destroy($id)
+    /*public function destroy($id)
     {
         $cycle = Cycle::findOrFail($id);
         // Vérifier si le cycle est en cours (DateFin est dans le futur ou le cycle n'est pas terminé)
@@ -327,61 +329,61 @@ class CycleController extends Controller
 
         $cycle->delete();
         return response()->json(['message' => 'Cycle supprimé avec succès']);
+    }*/
+
+    //ajout de poisson mort
+
+    public function addPoissonsMorts(Request $request, $idCycle)
+    {
+        // Validation des données entrantes
+        $validator = Validator::make($request->all(), [
+            'nombre_morts' => 'nullable|integer|min:0',
+        ], [
+            'nombre_morts.integer' => 'Le nombre de poissons morts doit être un entier.',
+            'nombre_morts.min' => 'Le nombre de poissons morts ne peut pas être négatif.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Récupérer le cycle
+        $cycle = Cycle::find($idCycle);
+
+        if (!$cycle) {
+            return response()->json(['message' => 'Cycle non trouvé'], 404);
+        }
+
+        // Récupérer le nombre de poissons morts ajouté
+        $nombreMorts = $request->input('nombre_morts');
+
+        if ($nombreMorts === null) {
+            return response()->json(['message' => 'Aucun nombre de poissons morts fourni.'], 400);
+        }
+
+        // Vérifier que l'ajout de poissons morts ne dépasse pas le nombre initial
+        if (($cycle->poissons_morts + $nombreMorts) > $cycle->NbrePoisson) {
+            return response()->json([
+                'error' => 'Le nombre total de poissons morts dépasse le nombre initial de poissons dans le cycle.',
+            ], 422);
+        }
+
+        // Mettre à jour le nombre de poissons morts
+        $cycle->poissons_morts += $nombreMorts;
+
+        // Calculer le nombre de poissons restants
+        $poissonsRestants = $cycle->NbrePoisson - $cycle->poissons_morts;
+
+        // Enregistrer les modifications
+        $cycle->nombrePoissonsRestants = $poissonsRestants; // Stocker le nombre restants
+        $cycle->save();
+
+        return response()->json([
+            'message' => 'Nombre de poissons morts mis à jour avec succès.',
+            'poissons_morts' => $cycle->poissons_morts,
+            'poissons_restants' => $poissonsRestants,
+        ], 200);
     }
-
-   //ajout de poisson mort
-
-   public function addPoissonsMorts(Request $request, $idCycle)
-   {
-       // Validation des données entrantes
-       $validator = Validator::make($request->all(), [
-           'nombre_morts' => 'nullable|integer|min:0',
-       ], [
-           'nombre_morts.integer' => 'Le nombre de poissons morts doit être un entier.',
-           'nombre_morts.min' => 'Le nombre de poissons morts ne peut pas être négatif.',
-       ]);
-
-       if ($validator->fails()) {
-           return response()->json(['errors' => $validator->errors()], 422);
-       }
-
-       // Récupérer le cycle
-       $cycle = Cycle::find($idCycle);
-
-       if (!$cycle) {
-           return response()->json(['message' => 'Cycle non trouvé'], 404);
-       }
-
-       // Récupérer le nombre de poissons morts ajouté
-       $nombreMorts = $request->input('nombre_morts');
-
-       if ($nombreMorts === null) {
-           return response()->json(['message' => 'Aucun nombre de poissons morts fourni.'], 400);
-       }
-
-       // Vérifier que l'ajout de poissons morts ne dépasse pas le nombre initial
-       if (($cycle->poissons_morts + $nombreMorts) > $cycle->NbrePoisson) {
-           return response()->json([
-               'error' => 'Le nombre total de poissons morts dépasse le nombre initial de poissons dans le cycle.',
-           ], 422);
-       }
-
-       // Mettre à jour le nombre de poissons morts
-       $cycle->poissons_morts += $nombreMorts;
-
-       // Calculer le nombre de poissons restants
-       $poissonsRestants = $cycle->NbrePoisson - $cycle->poissons_morts;
-
-       // Enregistrer les modifications
-       $cycle->nombrePoissonsRestants = $poissonsRestants; // Stocker le nombre restants
-       $cycle->save();
-
-       return response()->json([
-           'message' => 'Nombre de poissons morts mis à jour avec succès.',
-           'poissons_morts' => $cycle->poissons_morts,
-           'poissons_restants' => $poissonsRestants,
-       ], 200);
-   }
 
 
 
@@ -452,5 +454,22 @@ class CycleController extends Controller
             'nombrePoissonsRestants' => $nombreRestant,
             'cycle' => $cycle,
         ], 200);
+    }
+
+    public function destroy($id)
+    {
+        // Vérifier si le cycle existe
+        $cycle = Cycle::find($id);
+
+        // Si le cycle n'existe pas, retourner une erreur 404
+        if (!$cycle) {
+            return response()->json(['message' => 'Cycle non trouvé'], 404);
+        }
+
+        // Supprimer le cycle
+        $cycle->delete();
+
+        // Retourner une réponse confirmant la suppression
+        return response()->json(['message' => 'Cycle supprimé avec succès'], 200);
     }
 }

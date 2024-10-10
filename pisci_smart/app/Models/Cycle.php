@@ -24,7 +24,7 @@ class Cycle extends Model
         'idBassin',
         'description', // Ajout de description ici
         'poissons_morts', // Ajout de ce champ
-
+        'numero_serie' // Ajout de numero_serie ici
     ];
 
     // Méthode pour définir la date de fin
@@ -42,5 +42,7 @@ class Cycle extends Model
     protected static $rules = [
         'DateDebut' => 'required|date|before_or_equal:today',
         'description' => 'nullable|string|max:255', // Ajout de la validation pour description
+        'numero_serie' => 'nullable|string|max:255', // Ajout de la validation pour numero_serie
     ];
 }
+

@@ -156,7 +156,7 @@ class EmployeController extends Controller
         return response()->json(['total_employes' => $totalEmployes]);
     }
 
-    
+
     // Afficher uniquement le nom, prénom, téléphone, et adresse des employés d'un pisciculteur spécifique
 public function getEmployeInfoByPisciculteur($idPisciculteur)
 {
@@ -188,6 +188,41 @@ public function getEmployeInfoByPisciculteur($idPisciculteur)
         ], 500);
     }
 }
+
+
+// Récupérer la liste des employés par pisciculteur sous forme d'objet
+public function get_employes_by_pisciculteur($idPisciculteur)
+{
+    try {
+        // Vérifier si le pisciculteur existe
+        $pisciculteur = Pisciculteur::findOrFail($idPisciculteur);
+
+        // Récupérer les employés associés à ce pisciculteur
+        $employes = Employe::where('idPisciculteur', $idPisciculteur)->get();
+
+        // Vérifier s'il y a des employés pour ce pisciculteur
+        if ($employes->isEmpty()) {
+            return response()->json([
+                'message' => 'Aucun employé trouvé pour ce pisciculteur.',
+            ], 404);
+        }
+
+        // Retourner les employés sous forme d'objet
+        return response()->json([
+            'message' => 'Employés récupérés avec succès.',
+            'employes' => [
+                'data' => $employes
+            ]
+        ]);
+    } catch (\Exception $e) {
+        // Log the exception message
+        Log::error($e->getMessage());
+        // Retourner une réponse générique en cas d'erreur
+        return response()->json(['error' => 'Erreur lors de la récupération des employés.'], 500);
+    }
+}
+
+
 
 
 

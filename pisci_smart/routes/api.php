@@ -14,13 +14,9 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\StatistiquesController;
 use App\Http\Controllers\AdminController;
-
 use App\Http\Controllers\MediaController;
-
 use App\Http\Controllers\CommentaireController;
-
 use App\Models\Dispositif;
-
 use App\Http\Controllers\CycleController;
 use App\Http\Controllers\DepenseController;
 use App\Http\Controllers\PerteController;
@@ -110,6 +106,9 @@ Route::apiResource('cycles', CycleController::class);
 Route::get('/cycles/{idCycle}/ventes', [VenteController::class, 'getVentesByCycle']);
 Route::get('/cycles/{idCycle}/depenses', [DepenseController::class, 'getDepensesByCycle']);
 Route::get('/cyclesE', [CycleController::class, 'getActiveCycles']);
+
+Route::delete('/cycles/{id}', [CycleController::class, 'destroy']);
+
 
 
 
@@ -228,6 +227,9 @@ Route::get('bassins/pisciculteur/{idPisciculteur}', [BassinController::class, 'g
 //ajouter poisson mort
 Route::post('/cycle/{idCycle}/poissons-morts', [CycleController::class, 'addPoissonsMorts']);
 
+//liste des employés par pisciculteur
+Route::get('employes/pisciculteur/{id}', [EmployeController::class, 'get_employes_by_pisciculteur']);
 
-
+//ajouter employe
+Route::post('/employe', [EmployeController::class, 'create_employe']);
 
