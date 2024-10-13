@@ -99,43 +99,42 @@ class EmployeController extends Controller
     }
 
     // Modifier un employé
-    public function update_employe(Request $request, $idEmploye)
+    public function update_employe(Request $request, $id)
     {
         try {
-            // Vérifier si l'employé existe
-            $employe = Employe::find($idEmploye);
-
-            if (!$employe) {
-                return response()->json([
-                    'message' => 'Employé non trouvé',
-                    'status' => 404,
-                ], 404);
-            }
-
-            // Valider les données
+            // Valider les données reçues
             $validated = $request->validate([
-                'nom' => 'required|string|max:255',
-                'prenom' => 'required|string|max:255',
-                'telephone' => 'required|string|max:255',
-                'adresse' => 'required|string|max:255',
-                'idPisciculteur' => 'required|integer|exists:pisciculteurs,idPisciculteur',
+                'nom' => 'sometimes|required|string|max:255',
+                'prenom' => 'sometimes|required|string|max:255',
+                'telephone' => 'sometimes|required|string|max:255|unique:employes,telephone,' . $id . ',idEmploye',  // Ignorer l'unicité pour l'employé actuel
+                'adresse' => 'sometimes|required|string|max:255',
+                'idPisciculteur' => 'sometimes|required|integer|exists:pisciculteurs,idPisciculteur',
+                'password' => 'sometimes|nullable|string|min:8',
             ]);
 
-            // Mise à jour des données de l'employé
+            // Trouver l'employé à modifier
+            $employe = Employe::findOrFail($id);
+
+            // Hacher le mot de passe uniquement s'il est fourni dans la requête
+            if ($request->has('password')) {
+                $validated['password'] = bcrypt($request->password);
+            }
+
+            // Mettre à jour les informations de l'employé
             $employe->update($validated);
 
             return response()->json([
-                'message' => 'Mise à jour réussie',
-                'status' => 200,
-                'employe' => $employe,
-            ], 200);
+                'message' => 'Employé modifié avec succès.',
+                'employe' => $employe
+            ]);
         } catch (\Exception $e) {
             // Log the exception message
             Log::error($e->getMessage());
-            // Return a generic error response
-            return response()->json(['error' => 'mise à jour échoué! pisciculteur n/existe pas.'], 500);
+            // Retourner une réponse générique en cas d'erreur
+            return response()->json(['error' => 'Erreur lors de la modification de l\'employé.'], 500);
         }
     }
+
 
     //nbre total de pisciculteur par employé
     public function getTotalEmployesByPisciculteur(Request $request)
