@@ -20,63 +20,62 @@ class EmployeController extends Controller
     //afficher un employé
 
     public function getEmployeById($id)
-{
-    try {
-        // Rechercher l'employe' par ID
-        $employe = Employe::find($id);
+    {
+        try {
+            // Rechercher l'employe' par ID
+            $employe = Employe::find($id);
 
-        // Si l'employe n'existe pas, retourner une erreur
-        if (!$employe) {
+            // Si l'employe n'existe pas, retourner une erreur
+            if (!$employe) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'employe non trouvé'
+                ], 404);
+            }
+
+            // Retourner l'employe trouvé
+            return response()->json([
+                'status' => 'success',
+                'data' => $employe
+            ], 200);
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'employe non trouvé'
-            ], 404);
+                'message' => 'Une erreur s/est produite lors de la récupération de l/employe.',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        // Retourner l'employe trouvé
-        return response()->json([
-            'status' => 'success',
-            'data' => $employe
-        ], 200);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Une erreur s/est produite lors de la récupération de l/employe.',
-            'error' => $e->getMessage()
-        ], 500);
     }
-}
 
     // Créer un employé
     public function create_employe(Request $request)
-{
-    try {
-        $validated = $request->validate([
-            'nom' => 'required|string|max:255',
-            'prenom' => 'required|string|max:255',
-            'telephone' => 'required|string|max:255|unique:employes',
-            'adresse' => 'required|string|max:255',
-            'idPisciculteur' => 'required|integer|exists:pisciculteurs,idPisciculteur',
-            'password' => 'required|string|min:8',
-        ]);
+    {
+        try {
+            $validated = $request->validate([
+                'nom' => 'required|string|max:255',
+                'prenom' => 'required|string|max:255',
+                'telephone' => 'required|string|max:255|unique:employes',
+                'adresse' => 'required|string|max:255',
+                'idPisciculteur' => 'required|integer|exists:pisciculteurs,idPisciculteur',
+                'password' => 'required|string|min:8',
+            ]);
 
-        // Hacher le mot de passe avant de le sauvegarder dans la base de données
-        $validated['password'] = bcrypt($request->password);
+            // Hacher le mot de passe avant de le sauvegarder dans la base de données
+            $validated['password'] = bcrypt($request->password);
 
-        $newemploye = Employe::create($validated);
+            $newemploye = Employe::create($validated);
 
-        return response()->json([
-            'message' => 'Employé ajouté avec succès.',
-            'employe' => $newemploye
-        ]);
-    } catch (\Exception $e) {
-        // Log the exception message
-        Log::error($e->getMessage());
-        // Return a generic error response
-        return response()->json(['error' => 'Erreur lors de l\'ajout de l\'employé.'], 500);
+            return response()->json([
+                'message' => 'Employé ajouté avec succès.',
+                'employe' => $newemploye
+            ]);
+        } catch (\Exception $e) {
+            // Log the exception message
+            Log::error($e->getMessage());
+            // Return a generic error response
+            return response()->json(['error' => 'Erreur lors de l\'ajout de l\'employé.'], 500);
+        }
     }
-}
 
 
     // Supprimer un employé
@@ -158,73 +157,61 @@ class EmployeController extends Controller
 
 
     // Afficher uniquement le nom, prénom, téléphone, et adresse des employés d'un pisciculteur spécifique
-public function getEmployeInfoByPisciculteur($idPisciculteur)
-{
-    try {
-        // Vérifier si le pisciculteur existe
-        $pisciculteur = Pisciculteur::find($idPisciculteur);
+    public function getEmployeInfoByPisciculteur($idPisciculteur)
+    {
+        try {
+            // Vérifier si le pisciculteur existe
+            $pisciculteur = Pisciculteur::find($idPisciculteur);
 
-        if (!$pisciculteur) {
-            return response()->json(['message' => 'Pisciculteur non trouvé'], 404);
-        }
+            if (!$pisciculteur) {
+                return response()->json(['message' => 'Pisciculteur non trouvé'], 404);
+            }
 
-        // Utilisation de la méthode select pour récupérer uniquement les champs spécifiés
-        $employes = Employe::select('nom', 'prenom', 'telephone', 'adresse')
-            ->where('idPisciculteur', $idPisciculteur)
-            ->get();
+            // Utilisation de la méthode select pour récupérer uniquement les champs spécifiés
+            $employes = Employe::select('nom', 'prenom', 'telephone', 'adresse')
+                ->where('idPisciculteur', $idPisciculteur)
+                ->get();
 
-        // Retourner les résultats sous forme de JSON
-        return response()->json([
-            'status' => 'success',
-            'data' => $employes
-        ], 200);
-
-    } catch (\Exception $e) {
-        // Gérer les erreurs et retourner une réponse d'erreur
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Erreur lors de la récupération des informations des employés.',
-            'error' => $e->getMessage()
-        ], 500);
-    }
-}
-
-
-// Récupérer la liste des employés par pisciculteur sous forme d'objet
-public function get_employes_by_pisciculteur($idPisciculteur)
-{
-    try {
-        // Vérifier si le pisciculteur existe
-        $pisciculteur = Pisciculteur::findOrFail($idPisciculteur);
-
-        // Récupérer les employés associés à ce pisciculteur
-        $employes = Employe::where('idPisciculteur', $idPisciculteur)->get();
-
-        // Vérifier s'il y a des employés pour ce pisciculteur
-        if ($employes->isEmpty()) {
+            // Retourner les résultats sous forme de JSON
             return response()->json([
-                'message' => 'Aucun employé trouvé pour ce pisciculteur.',
-            ], 404);
-        }
-
-        // Retourner les employés sous forme d'objet
-        return response()->json([
-            'message' => 'Employés récupérés avec succès.',
-            'employes' => [
+                'status' => 'success',
                 'data' => $employes
-            ]
-        ]);
-    } catch (\Exception $e) {
-        // Log the exception message
-        Log::error($e->getMessage());
-        // Retourner une réponse générique en cas d'erreur
-        return response()->json(['error' => 'Erreur lors de la récupération des employés.'], 500);
+            ], 200);
+        } catch (\Exception $e) {
+            // Gérer les erreurs et retourner une réponse d'erreur
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Erreur lors de la récupération des informations des employés.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    // Récupérer la liste des employés par pisciculteur sous forme d'objet
+    public function get_employes_by_pisciculteur($idPisciculteur)
+    {
+        try {
+            // Vérifier si le pisciculteur existe
+            $pisciculteur = Pisciculteur::findOrFail($idPisciculteur);
+
+            // Récupérer les employés associés à ce pisciculteur
+            $employes = Employe::where('idPisciculteur', $idPisciculteur)->get();
+
+            // Vérifier s'il y a des employés pour ce pisciculteur
+            if ($employes->isEmpty()) {
+                return response()->json([
+                    'message' => 'Aucun employé trouvé pour ce pisciculteur.',
+                ], 404);
+            }
+
+            // Retourner les employés sous forme de tableau d'objets sans encapsulation
+            return response()->json($employes);
+        } catch (\Exception $e) {
+            // Log the exception message
+            Log::error($e->getMessage());
+            // Retourner une réponse générique en cas d'erreur
+            return response()->json(['error' => 'Erreur lors de la récupération des employés.'], 500);
+        }
     }
 }
-
-
-
-
-
-}
-

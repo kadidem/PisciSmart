@@ -224,6 +224,10 @@ Route::delete('/cycles', [CycleController::class, 'destroyAll']);
 //bassin d'un pisciculteur
 Route::get('bassins/pisciculteur/{idPisciculteur}', [BassinController::class, 'getBassinsByPisciculteur']);
 
+//nbre de dispositif par pisciculteur
+Route::get('/pisciculteur/{idPisciculteur}/dispositifs/count', [DispositifController::class, 'countDispositifsByPisciculteur']);
+
+
 //ajouter poisson mort
 Route::post('/cycle/{idCycle}/poissons-morts', [CycleController::class, 'addPoissonsMorts']);
 
@@ -232,4 +236,5 @@ Route::get('employes/pisciculteur/{id}', [EmployeController::class, 'get_employe
 
 //ajouter employe
 Route::post('/employe', [EmployeController::class, 'create_employe']);
+
 

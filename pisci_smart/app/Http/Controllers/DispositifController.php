@@ -308,4 +308,25 @@ class DispositifController extends Controller
 
         return response()->json($formattedDispositifs, 200);
     }
+    //nbre de dispositif par pisciculteur
+    public function countDispositifsByPisciculteur(Request $request, $idPisciculteur)
+{
+    // Vérifier si le pisciculteur existe
+    $pisciculteur = Pisciculteur::find($idPisciculteur);
+
+    if (!$pisciculteur) {
+        return response()->json([
+            'message' => 'Pisciculteur non trouvé'
+        ], 404);
+    }
+
+    // Compter le nombre de dispositifs associés au pisciculteur
+    $countDispositifs = $pisciculteur->dispositifs()->count();
+
+    return response()->json([
+        'idPisciculteur' => $idPisciculteur,
+        'nombre_de_dispositifs' => $countDispositifs
+    ], 200);
+}
+
 }
