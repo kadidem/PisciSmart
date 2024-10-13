@@ -52,7 +52,6 @@ Route::get('/employe', [EmployeController::class, 'get_all_employe']);
 Route::get('/employe/{id}', [EmployeController::class, 'getEmployeById']);
 Route::post('/employe', [EmployeController::class, 'create_employe']);
 Route::put('/employe/{id}', [EmployeController::class, 'update_employe']);
-Route::delete('/employe/{id}', [EmployeController::class, 'delete_employe']);
 Route::get('/employes/total-par-pisciculteur', [EmployeController::class, 'getTotalEmployesByPisciculteur']);
 
 //nourriture
@@ -236,5 +235,9 @@ Route::get('employes/pisciculteur/{id}', [EmployeController::class, 'get_employe
 
 //ajouter employe
 Route::post('/employe', [EmployeController::class, 'create_employe']);
+
+//supprimer employe
+Route::delete('/employe/{id}', [EmployeController::class, 'delete_employe']);
+
 
 
