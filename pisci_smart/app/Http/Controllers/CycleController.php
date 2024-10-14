@@ -90,7 +90,7 @@ class CycleController extends Controller
 
     public function store(Request $request)
     {
-
+        // Validation des données d'entrée
         $validatedData = $request->validate(
             [
                 'AgePoisson' => 'required|integer',
@@ -101,21 +101,19 @@ class CycleController extends Controller
                 'description' => 'required|string|max:255',
                 'idBassin' => 'required|exists:bassins,idBassin',
                 'numero_serie' => 'nullable|string|max:255' // Validation pour numero_serie
-                //'numero_serie' => 'nullable|exists:bassins,idBassin|string|max:255' // Validation pour numero_serie
             ],
             [
-                'DateDebut.before_or_equal' => 'La date ne peut pas être dans le futur. Veuillez entrer une date valide.',
-                //'numero_serie.exists' => 'Le numéro de série doit correspondre à un bassin existant.',
+                'DateDebut.before_or_equal' => 'La date ne peut pas être dans le futur. Veuillez entrer une date valide.'
             ]
         );
 
+        // Trouver le bassin associé
         $bassin = Bassin::find($request->idBassin);
 
-        // Vérifier si le bassin a été trouvé
+        // Vérifier si le bassin existe
         if (!$bassin) {
             return response()->json(['message' => 'Bassin non trouvé'], 404);
         }
-
 
         // Vérifier s'il existe déjà un cycle en cours dans ce bassin
         $cycleEnCours = Cycle::where('idBassin', $request->idBassin)
@@ -131,20 +129,17 @@ class CycleController extends Controller
         // Calculer automatiquement la date de fin (ajouter 6 mois à la date de début)
         $validatedData['DateFin'] = Carbon::parse($validatedData['DateDebut'])->addMonths(6);
 
-        // Déterminer les normes en fonction de la dimension et de l'unité du bassin
+        // Logique pour déterminer le nombre maximal de poissons permis dans le bassin
         $dimension = $bassin->dimension;
         $unite = $bassin->unite;
-        // Logique de validation des poissons en fonction de la dimension du bassin
+
         if ($unite == 'm3') {
-            // Validation pour les bassins en m3
-            $maxPoisson = $dimension * 100; // Exemple : 1m3 = 100 poissons
+            $maxPoissons = $dimension * 100; // Exemple : 1m3 = 100 poissons
         } elseif ($unite == 'm2') {
-            // Validation pour les bassins en m2
-            $maxPoisson = $dimension * 45; // Exemple : 1m2 = 45 poissons
+            $maxPoissons = $dimension * 45; // Exemple : 1m2 = 45 poissons
         } else {
             return response()->json(['message' => "Unité non reconnue"], 400);
         }
-        $maxPoissons = $this->getMaxPoissonsForBassin($dimension, $unite);
 
         // Vérifier que le nombre de poissons respecte les normes
         if ($validatedData['NbrePoisson'] > $maxPoissons) {
@@ -152,6 +147,9 @@ class CycleController extends Controller
                 'error' => "Le nombre de poissons dépasse la limite autorisée pour un bassin de {$dimension}{$unite}. Maximum autorisé: {$maxPoissons} poissons."
             ], 422);
         }
+
+        // Initialiser le champ poisson_vendus à 0 lors de la création du cycle
+        $validatedData['poisson_vendus'] = 0;
 
         // Créer le cycle avec les données validées
         $cycle = Cycle::create($validatedData);
@@ -162,6 +160,7 @@ class CycleController extends Controller
             'cycle' => $cycle
         ], 201);
     }
+
 
     // les dimensions par poisson Bassin et cycle
     private function getMaxPoissonsForBassin($dimension, $unite)
@@ -244,7 +243,6 @@ class CycleController extends Controller
         ]);
     }
 
-
     public function show($id)
     {
         // Récupérer le cycle avec l'ID fourni
@@ -256,15 +254,22 @@ class CycleController extends Controller
         // Calcul du total des poissons vendus
         $totalVentesQuantite = $ventes->sum('quantite');
 
+        // Mettre à jour la colonne poissons_vendus avec la somme des ventes
+        $cycle->poissons_vendus = $totalVentesQuantite;
+
+        // Calculer les poissons restants (NbrePoisson - poissons morts - poissons vendus)
+        $poissonsRestants = $cycle->NbrePoisson - $cycle->poissons_morts - $totalVentesQuantite;
+        $cycle->nombrePoissonsRestants = $poissonsRestants; // Utiliser le nom correct ici
+
+        // Sauvegarder les modifications dans la base de données
+        $cycle->save();
+
         // Vérifier si la date actuelle est après la date de fin du cycle
         $dateActuelle = now(); // Obtenir la date actuelle
         $cycleTermineParDate = $dateActuelle->greaterThanOrEqualTo($cycle->DateFin);
 
         // Déterminer si le cycle est terminé
-        $cycleTermine = $totalVentesQuantite >= $cycle->NbrePoisson  || $cycleTermineParDate;
-
-        // Calculer les poissons restants
-        $poissonsRestants = $cycle->NbrePoisson - $cycle->poissons_morts - $totalVentesQuantite;
+        $cycleTermine = $totalVentesQuantite >= $cycle->NbrePoisson || $cycleTermineParDate;
 
         // Retourner les informations du cycle avec le statut
         return response()->json([
@@ -276,11 +281,15 @@ class CycleController extends Controller
             'NumCycle' => $cycle->NumCycle,
             'espece' => $cycle->espece,
             'poissons_morts' => $cycle->poissons_morts,
-            'poissons_restants' => $poissonsRestants,
+            'poissons_vendus' => $cycle->poissons_vendus,
+            'nombrePoissonsRestants' => $cycle->nombrePoissonsRestants, // Utiliser la colonne correcte ici
             'statut_Cycle' => $cycleTermine ? 'Terminé' : 'En cours',
-            'numero_serie' => 'nullable|string|max:255' // Validation pour numero_serie
+            'numero_serie' => $cycle->numero_serie // Suppression de la validation pour afficher la valeur
         ]);
     }
+
+
+
 
     public function update(Request $request, $id)
     {
@@ -314,22 +323,7 @@ class CycleController extends Controller
     }
 
 
-    /*public function destroy($id)
-    {
-        $cycle = Cycle::findOrFail($id);
-        // Vérifier si le cycle est en cours (DateFin est dans le futur ou le cycle n'est pas terminé)
-        if ($cycle->DateFin > now()) {
-            // Retourner un message personnalisé si l'utilisateur essaie de supprimer un cycle en cours
-            return response()->json([
-                'message' => 'Impossible de supprimer un cycle en cours. Veuillez le terminer ou le prolonger.',
-            ], 400);
-        }
 
-        // Si le cycle est terminé, on peut le supprimer
-
-        $cycle->delete();
-        return response()->json(['message' => 'Cycle supprimé avec succès']);
-    }*/
 
     //ajout de poisson mort
 

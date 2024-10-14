@@ -22,9 +22,10 @@ class Cycle extends Model
         'NumCycle',
         'espece',
         'idBassin',
-        'description', // Ajout de description ici
-        'poissons_morts', // Ajout de ce champ
-        'numero_serie' // Ajout de numero_serie ici
+        'description',  // Ajout de description ici
+        'poissons_morts', // Ajout de poissons_morts ici
+        'numero_serie',   // Ajout de numero_serie ici
+        'poisson_vendus'  // Ajout de poisson_vendus ici
     ];
 
     // Méthode pour définir la date de fin
@@ -45,4 +46,3 @@ class Cycle extends Model
         'numero_serie' => 'nullable|string|max:255', // Ajout de la validation pour numero_serie
     ];
 }
-

@@ -213,7 +213,7 @@ Route::get('/users', [AuthController::class, 'getAllUsers']);
 Route::put('/cycles/{id}/pertes', [CycleController::class, 'updateNombrePertes']);
 
 //detail cycle
-Route::get('/cycles/{id}/details', [CycleController::class, 'getCycleDetails']);
+Route::get('/cycles/{id}/details', [CycleController::class, 'getActiveCycles']);
 
 Route::delete('/cycles', [CycleController::class, 'destroyAll']);
 
@@ -240,3 +240,6 @@ Route::post('/employe', [EmployeController::class, 'create_employe']);
 Route::delete('/employe/{id}', [EmployeController::class, 'delete_employe']);
 //modifier employe
 Route::put('/employe/{id}', [EmployeController::class, 'update_employe']);
+
+//detail cycle
+Route::get('/cycles/{id}', [CycleController::class, 'show']);
