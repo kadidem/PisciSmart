@@ -243,3 +243,4 @@ Route::put('/employe/{id}', [EmployeController::class, 'update_employe']);
 
 //detail cycle
 Route::get('/cycles/{id}', [CycleController::class, 'show']);
+Route::get('/cycles/{idCycle}/nourritures', [NourritureController::class, 'get_nourritures_by_cycle']);

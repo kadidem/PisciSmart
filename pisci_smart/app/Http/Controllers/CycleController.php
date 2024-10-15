@@ -289,8 +289,6 @@ class CycleController extends Controller
     }
 
 
-
-
     public function update(Request $request, $id)
     {
         $validatedData =  $request->validate([

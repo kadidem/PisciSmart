@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Nourriture;
 use Illuminate\Http\Request;
+use App\Models\Cycle;
+
 
 class NourritureController extends Controller
 {
@@ -107,4 +109,28 @@ class NourritureController extends Controller
             ]);
         }
     }
+
+    //liste des nourritures par cycle
+    // Obtenir la liste des nourritures d'un cycle spécifique
+public function get_nourritures_by_cycle($idCycle)
+{
+    // Vérifier que le cycle existe
+    $cycle = Cycle::find($idCycle);
+
+    if (!$cycle) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Cycle non trouvé'
+        ], 404);
+    }
+
+    // Récupérer toutes les nourritures liées à ce cycle
+    $nourritures = Nourriture::where('idCycle', $idCycle)->get();
+
+    return response()->json([
+        'status' => 'success',
+        'data' => $nourritures
+    ], 200);
+}
+
 }
