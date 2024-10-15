@@ -112,25 +112,22 @@ class NourritureController extends Controller
 
     //liste des nourritures par cycle
     // Obtenir la liste des nourritures d'un cycle spécifique
-public function get_nourritures_by_cycle($idCycle)
-{
-    // Vérifier que le cycle existe
-    $cycle = Cycle::find($idCycle);
+    public function get_nourritures_by_cycle($idCycle)
+    {
+        // Vérifier que le cycle existe
+        $cycle = Cycle::find($idCycle);
 
-    if (!$cycle) {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Cycle non trouvé'
-        ], 404);
+        if (!$cycle) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Cycle non trouvé'
+            ], 404);
+        }
+
+        // Récupérer toutes les nourritures liées à ce cycle
+        $nourritures = Nourriture::where('idCycle', $idCycle)->get();
+
+        // Renvoyer directement la liste des nourritures (sous forme de tableau)
+        return response()->json($nourritures, 200);
     }
-
-    // Récupérer toutes les nourritures liées à ce cycle
-    $nourritures = Nourriture::where('idCycle', $idCycle)->get();
-
-    return response()->json([
-        'status' => 'success',
-        'data' => $nourritures
-    ], 200);
-}
-
 }
