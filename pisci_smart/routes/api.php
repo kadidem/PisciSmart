@@ -157,7 +157,7 @@ Route::get('/messages/unread/{destinataireId}', [MessageController::class, 'getU
 
 
 //post
-Route::post('/posts', [PostController::class, 'store']);
+
 Route::get('/posts/filter-by-type', [PostController::class, 'filterByType']);
 Route::get('/posts', [PostController::class, 'index']);
 Route::get('/posts/user', [PostController::class, 'getPostsByUser']);
@@ -244,3 +244,6 @@ Route::put('/employe/{id}', [EmployeController::class, 'update_employe']);
 //detail cycle
 Route::get('/cycles/{id}', [CycleController::class, 'show']);
 Route::get('/cycles/{idCycle}/nourritures', [NourritureController::class, 'get_nourritures_by_cycle']);
+
+//Post
+Route::post('/posts', [PostController::class, 'store']);
