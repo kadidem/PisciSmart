@@ -12,7 +12,7 @@ use App\Models\TypeDemande;
 class PostController extends Controller
 {
     // Récupérer tous les posts
-    public function index()
+    /*public function index()
     {
         $posts = Post::with(['pisciculteur', 'visiteur', 'typeDemande', 'commentaires', 'media'])
             ->get()
@@ -22,11 +22,29 @@ class PostController extends Controller
             });
 
         return response()->json(['posts' => $posts], 200);
+    }*/
+
+    // Récupérer tous les posts
+    public function index()
+    {
+        // Récupérer les posts avec les relations nécessaires
+        $posts = Post::with(['user']) // Charger les relations 'user', 'commentaires', et 'media'
+            ->get()
+            ->each(function ($post) {
+                // Ajouter le champ 'formatted_time' pour chaque post
+                $post->formatted_time = Carbon::parse($post->created_at)->diffForHumans();
+                // Masquer les champs 'created_at' et 'updated_at' dans la réponse
+                $post->makeHidden(['created_at', 'updated_at']);
+            });
+
+        // Retourner la réponse avec les posts
+        return response()->json(['posts' => $posts], 200);
     }
 
 
+
     //créer un post
-    public function store(Request $request)
+    /*public function store(Request $request)
     {
         // Valider les données
         $validatedData = $request->validate([
@@ -59,7 +77,57 @@ class PostController extends Controller
                 'formatted_time' => $post->formatted_time,
             ]
         ], 201);
+    }*/
+
+    public function store(Request $request)
+    {
+        // Valider les données
+        $validatedData = $request->validate([
+            'contenu' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validation de l'image
+            'type' => 'required|string', // "vente", "recherche", etc.
+            'user_id' => 'required|exists:users,id'
+        ]);
+
+        // Vérifier qu'au moins un des deux (contenu ou image) est fourni
+        if (!$request->contenu && !$request->hasFile('image')) {
+            return response()->json(['message' => 'Le contenu ou l\'image est requis.'], 400);
+        }
+
+        // Initialiser les données du post
+        $postData = [
+            'type' => $request->type,
+            'user_id' => $request->user_id,
+        ];
+
+        // Si le contenu texte est présent
+        if ($request->filled('contenu')) {
+            $postData['contenu'] = $request->contenu;
+        }
+
+        // Si une image est uploadée
+        if ($request->hasFile('image')) {
+            // Stocker l'image dans un répertoire
+            $imagePath = $request->file('image')->store('public/images'); // Stocke l'image dans le répertoire public
+            $postData['image'] = $imagePath;
+        }
+
+        // Créer le post avec les données
+        $post = Post::create($postData);
+
+        // Formater l'heure de création
+        $post->formatted_time = Carbon::parse($post->created_at)->diffForHumans();
+
+        // Retirer les champs created_at et updated_at de la réponse
+        $post->makeHidden(['created_at', 'updated_at']);
+
+        // Retourner la réponse JSON
+        return response()->json([
+            'message' => 'Post créé avec succès.',
+            'post' => $post
+        ], 201);
     }
+
 
 
 
@@ -123,8 +191,8 @@ class PostController extends Controller
 
         // Récupérer les posts par ID de l'utilisateur
         $posts = Post::where('user_id', $userId);
-           // ->with(['commentaires', 'media']) // Notez que les relations avec pisciculteur et visiteur sont retirées
-            //->get();
+        // ->with(['commentaires', 'media']) // Notez que les relations avec pisciculteur et visiteur sont retirées
+        //->get();
 
         // Vérifier si aucun post n'a été trouvé
         if ($posts->isEmpty()) {

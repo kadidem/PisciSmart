@@ -16,6 +16,7 @@ class Post extends Model
         'contenu',
         'type',
         'user_id',
+        'image_path'
     ];
 
     /**
@@ -26,5 +27,5 @@ class Post extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    
+
 }

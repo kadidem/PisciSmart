@@ -160,7 +160,6 @@ Route::get('/messages/unread/{destinataireId}', [MessageController::class, 'getU
 
 Route::get('/posts/filter-by-type', [PostController::class, 'filterByType']);
 Route::get('/posts', [PostController::class, 'index']);
-Route::get('/posts/user', [PostController::class, 'getPostsByUser']);
 Route::delete('/posts/{id}', [PostController::class, 'deletePost']);
 
 
@@ -247,3 +246,5 @@ Route::get('/cycles/{idCycle}/nourritures', [NourritureController::class, 'get_n
 
 //Post
 Route::post('/posts', [PostController::class, 'store']);
+Route::get('/posts/user', [PostController::class, 'getPostsByUser']);
+

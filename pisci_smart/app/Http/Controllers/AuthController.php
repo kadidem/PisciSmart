@@ -74,6 +74,7 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'Bearer',
             'user' => [
+                'id' => $user->id, //ajout de l'id du user
                 'telephone' => $user->telephone,
                 'prenom' => $user->prenom,
                 'nom' => $user->nom,
