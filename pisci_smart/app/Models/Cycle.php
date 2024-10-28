@@ -25,7 +25,7 @@ class Cycle extends Model
         'description',  // Ajout de description ici
         'poissons_morts', // Ajout de poissons_morts ici
         'numero_serie',   // Ajout de numero_serie ici
-        'poisson_vendus'  // Ajout de poisson_vendus ici
+        'poissons_vendus'  // Ajout de poisson_vendus ici
     ];
 
     // Méthode pour définir la date de fin
