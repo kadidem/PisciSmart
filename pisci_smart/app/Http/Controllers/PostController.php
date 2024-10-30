@@ -45,7 +45,7 @@ class PostController extends Controller
 
     //créer un post
     /*public function store(Request $request)
-    { 
+    {
         // Valider les données
         $validatedData = $request->validate([
             'contenu' => 'required|string',
@@ -176,7 +176,7 @@ class PostController extends Controller
     }
 
 
-    //liste des post par user
+    //liste des post par users
     public function getPostsByUser(Request $request)
     {
         // Récupérer l'ID de l'utilisateur depuis la requête
