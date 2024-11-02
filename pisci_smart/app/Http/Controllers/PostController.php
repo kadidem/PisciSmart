@@ -80,54 +80,54 @@ class PostController extends Controller
     }*/
 
     public function store(Request $request)
-{
-    // Valider les données
-    $validatedData = $request->validate([
-        'contenu' => 'nullable|string',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validation de l'image
-        'type' => 'required|string', // "vente", "recherche", etc.
-        'user_id' => 'required|exists:users,id'
-    ]);
+    {
+        // Valider les données
+        $validatedData = $request->validate([
+            'contenu' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validation de l'image
+            'type' => 'required|string', // "vente", "recherche", etc.
+            'user_id' => 'required|exists:users,id'
+        ]);
 
-    // Vérifier qu'au moins un des deux (contenu ou image) est fourni
-    if (!$request->contenu && !$request->hasFile('image')) {
-        return response()->json(['message' => 'Le contenu ou l\'image est requis.'], 400);
+        // Vérifier qu'au moins un des deux (contenu ou image) est fourni
+        if (!$request->contenu && !$request->hasFile('image')) {
+            return response()->json(['message' => 'Le contenu ou l\'image est requis.'], 400);
+        }
+
+        // Initialiser les données du post
+        $postData = [
+            'type' => $request->type,
+            'user_id' => $request->user_id,
+        ];
+
+        // Si le contenu texte est présent
+        if ($request->filled('contenu')) {
+            $postData['contenu'] = $request->contenu;
+        }
+
+        // Si une image est uploadée
+        if ($request->hasFile('image')) {
+            // Stocker l'image dans le répertoire public/images/forums
+            $imagePath = $request->file('image')->store('public/images/forums');
+            $postData['image'] = str_replace('public/', 'storage/', $imagePath); // Modifier le chemin de l'image pour l'accès via l'URL
+        }
+
+        // Créer le post avec les données
+        $post = Post::create($postData);
+
+        // Formater l'heure de création
+        $post->formatted_time = Carbon::parse($post->created_at)->diffForHumans();
+
+        // Retirer les champs created_at et updated_at de la réponse
+        $post->makeHidden(['created_at', 'updated_at']);
+
+        // Retourner la réponse JSON avec l'URL complète de l'image
+        return response()->json([
+            'message' => 'Post créé avec succès.',
+            'post' => $post,
+            'image_url' => isset($postData['image']) ? url($postData['image']) : null
+        ], 201);
     }
-
-    // Initialiser les données du post
-    $postData = [
-        'type' => $request->type,
-        'user_id' => $request->user_id,
-    ];
-
-    // Si le contenu texte est présent
-    if ($request->filled('contenu')) {
-        $postData['contenu'] = $request->contenu;
-    }
-
-    // Si une image est uploadée
-    if ($request->hasFile('image')) {
-        // Stocker l'image dans le répertoire public/images/forums
-        $imagePath = $request->file('image')->store('public/images/forums');
-        $postData['image'] = str_replace('public/', 'storage/', $imagePath); // Modifier le chemin de l'image pour l'accès via l'URL
-    }
-
-    // Créer le post avec les données
-    $post = Post::create($postData);
-
-    // Formater l'heure de création
-    $post->formatted_time = Carbon::parse($post->created_at)->diffForHumans();
-
-    // Retirer les champs created_at et updated_at de la réponse
-    $post->makeHidden(['created_at', 'updated_at']);
-
-    // Retourner la réponse JSON avec l'URL complète de l'image
-    return response()->json([
-        'message' => 'Post créé avec succès.',
-        'post' => $post,
-        'image_url' => isset($postData['image']) ? url($postData['image']) : null
-    ], 201);
-}
 
 
     //rechercher un post par type demande (exple: achat de poissons, vente poisson...)
@@ -179,6 +179,7 @@ class PostController extends Controller
     //liste des post par users
     public function getPostsByUser(Request $request)
     {
+        dd('test');
         // Récupérer l'ID de l'utilisateur depuis la requête
         $userId = $request->query('user_id');
 
