@@ -30,15 +30,16 @@ class VenteController extends Controller
      * Store a newly created resource in storage.
      */
 
-    public function store(Request $request)
+    /*public function store(Request $request)
     {
         // Validation des données de la vente
         $validatedData = $request->validate(
             [
-                'idCycle' => 'required|exists:cycles,id', // Vérifier que le cycle existe
-                'quantite' => 'required|integer|min:1',   // La quantité de poissons vendus doit être au moins de 1
-                'prix' => 'required|numeric',             // Le prix de vente doit être un nombre
-                'date_vente' => 'required|date|before_or_equal:today' // La date de vente ne peut pas être dans le futur
+                'nom' => 'required|string',
+            'montant' => 'required|numeric|min:1',
+            'quantite' => 'required|numeric|min:1',
+            'date' => 'required|date|before_or_equal:today',
+            'idCycle' => 'required|exists:cycles,idCycle'// La date de vente ne peut pas être dans le futur
             ],
             [
                 'date_vente.before_or_equal' => 'La date de vente ne peut pas être dans le futur.'
@@ -75,21 +76,23 @@ class VenteController extends Controller
             'message' => 'Vente enregistrée avec succès',
             'vente' => $vente
         ], 201);
-    }
+    }*/
 
 
-    /*public function store(Request $request)
+    public function store(Request $request)
     {
-        $request->validate([
-            'nom' => 'required|string',
-            'montant' => 'required|numeric|min:1',
-            'quantite' => 'required|numeric|min:1',
-            'date' => 'required|date|before_or_equal:today',
-            'idCycle' => 'required|exists:cycles,idCycle'
-        ],
-        [
-            'date.before_or_equal' => 'La date ne peut pas être dans le futur. Veuillez entrer une date valide.',
-        ]);
+        $request->validate(
+            [
+                'nom' => 'required|string',
+                'montant' => 'required|numeric|min:1',
+                'quantite' => 'required|numeric|min:1',
+                'date' => 'required|date|before_or_equal:today',
+                'idCycle' => 'required|exists:cycles,idCycle'
+            ],
+            [
+                'date.before_or_equal' => 'La date ne peut pas être dans le futur. Veuillez entrer une date valide.',
+            ]
+        );
 
         // Obtenir le cycle lié
         $cycle = Cycle::find($request->idCycle);
@@ -112,7 +115,7 @@ class VenteController extends Controller
         $vente = Vente::create($request->all());
 
         return response()->json(['message' => 'Vente créé avec succès', 'data' => $vente], 201);
-    }*/
+    }
 
     /**
      * Display the specified resource.

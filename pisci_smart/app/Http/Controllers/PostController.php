@@ -179,7 +179,7 @@ class PostController extends Controller
     //liste des post par users
     public function getPostsByUser(Request $request)
     {
-        dd('test');
+        // dd('test');
         // Récupérer l'ID de l'utilisateur depuis la requête
         $userId = $request->query('user_id');
 
