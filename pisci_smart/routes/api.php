@@ -99,7 +99,7 @@ Route::delete('/bassin/{id}', [BassinController::class, 'delete_Bassin']);
 //cycle,vente,depense,perte
 // Route::middleware('auth:sanctum')->group(function () {
 Route::get('/bassins/{idBassin}/cycles', [CycleController::class, 'getCyclesByBassin']);
-
+//cycle
 Route::apiResource('cycles', CycleController::class);
 // });
 Route::get('/cycles/{idCycle}/ventes', [VenteController::class, 'getVentesByCycle']);
@@ -247,4 +247,3 @@ Route::get('/cycles/{idCycle}/nourritures', [NourritureController::class, 'get_n
 //Post
 Route::post('/posts', [PostController::class, 'store']);
 Route::get('/posts/user', [PostController::class, 'getPostsByUser']);
-
