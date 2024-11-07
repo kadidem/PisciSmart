@@ -246,4 +246,6 @@ Route::get('/cycles/{idCycle}/nourritures', [NourritureController::class, 'get_n
 
 //Post
 Route::post('/posts', [PostController::class, 'store']);
-Route::get('/posts/user', [PostController::class, 'getPostsByUser']);
+//Route::get('/posts/user', [PostController::class, 'getPostsByUser']);
+Route::get('/posts', [PostController::class, 'getAllPosts']);
+

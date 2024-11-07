@@ -224,4 +224,34 @@ class PostController extends Controller
         // Retourner une réponse de succès
         return response()->json(['message' => 'Post supprimé avec succès.'], 200);
     }
+
+
+
+    public function getAllPosts()
+    {
+        // Récupérer tous les posts avec les informations de l'utilisateur associé
+        $posts = Post::with('user')->get();
+
+        // Formater les données des posts pour correspondre à la structure souhaitée
+        $formattedPosts = $posts->map(function ($post) {
+            return [
+                'idPost' => $post->idPost,
+                'user_id' => $post->user_id,
+                'type' => $post->type,
+                'contenu' => $post->contenu,
+                'image' => $post->image ? url($post->image) : null,
+                'formatted_time' => Carbon::parse($post->created_at)->diffForHumans(),
+                'user' => [
+                    'id' => $post->user->id,
+                    'nom' => $post->user->nom,
+                    'prenom' => $post->user->prenom,
+
+
+                ]
+            ];
+        });
+
+        // Retourner uniquement le tableau de posts formatés
+        return response()->json($formattedPosts, 200);
+    }
 }
